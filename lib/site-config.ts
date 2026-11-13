@@ -9,12 +9,12 @@
  */
 
 export const siteConfig = {
-  name: "Loan Calculator",
+  name: "LoanCalm",
   /** Canonical origin used for canonical URLs, the sitemap and structured data. */
-  url: "https://www.loancalculator.example",
-  tagline: "Monthly payments, total interest and a full amortization schedule",
+  url: "https://www.loancalm.example",
+  tagline: "Loan Calculator & Planning",
   description:
-    "Free loan calculator that shows your monthly payment, total interest and a month-by-month amortization schedule. Runs entirely in your browser — no sign-up.",
+    "LoanCalm is a free loan calculator that shows your monthly payment, total interest and a month-by-month amortization schedule. Runs entirely in your browser — no sign-up.",
   locale: "en_US",
   language: "en-US",
   country: "United States",
@@ -45,7 +45,7 @@ export interface NavLink {
 }
 
 export const mainNav: NavLink[] = [
-  { href: "/mortgage-calculator", label: "Mortgage", mobileLabel: "Mortgage calculator" },
+  { href: "/mortgage-loan-calculator", label: "Mortgage", mobileLabel: "Mortgage loan calculator" },
   { href: "/auto-loan-calculator", label: "Auto", mobileLabel: "Auto loan calculator" },
   { href: "/personal-loan-calculator", label: "Personal", mobileLabel: "Personal loan calculator" },
   { href: "/student-loan-calculator", label: "Student", mobileLabel: "Student loan calculator" },
@@ -59,7 +59,7 @@ export const footerNav: { heading: string; links: NavLink[] }[] = [
     heading: "Calculators",
     links: [
       { href: "/", label: "Loan calculator" },
-      { href: "/mortgage-calculator", label: "Mortgage calculator" },
+      { href: "/mortgage-loan-calculator", label: "Mortgage loan calculator" },
       { href: "/auto-loan-calculator", label: "Auto loan calculator" },
       { href: "/personal-loan-calculator", label: "Personal loan calculator" },
       { href: "/student-loan-calculator", label: "Student loan calculator" },

@@ -43,7 +43,6 @@ export interface LoanTypePage {
   scenarioTakeaway: string;
   faqs: Faq[];
   sources: Source[];
-  related: string[];
 }
 
 export interface GuidePage {

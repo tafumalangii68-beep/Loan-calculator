@@ -69,7 +69,7 @@ export const guides: GuidePage[] = [
         ],
       },
     ],
-    relatedCalculators: ["/", "/mortgage-calculator"],
+    relatedCalculators: ["/", "/mortgage-loan-calculator"],
     sources: [
       {
         title: "Regulation Z (Truth in Lending), 12 CFR Part 1026",
@@ -191,7 +191,7 @@ export const guides: GuidePage[] = [
         ],
       },
     ],
-    relatedCalculators: ["/", "/mortgage-calculator", "/student-loan-calculator"],
+    relatedCalculators: ["/", "/mortgage-loan-calculator", "/student-loan-calculator"],
     sources: [
       {
         title: "Mortgages: tools and answers",

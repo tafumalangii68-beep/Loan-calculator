@@ -1,8 +1,9 @@
-# Loan Calculator
+# LoanCalm — Loan Calculator & Planning
 
-A fast, private, SEO-focused loan calculator website built with Next.js (App Router), TypeScript and Tailwind CSS.
+LoanCalm is a fast, private, SEO-focused loan calculator website built with Next.js (App Router), TypeScript and Tailwind CSS.
 
-- Loan calculator with monthly payment, total interest, payoff time, extra-payment savings and a yearly/monthly amortization schedule.
+- Live loan calculator (results update as you type) with monthly payment, total interest, payoff time, extra-payment savings and a yearly/monthly amortization schedule.
+- Header site search (Ctrl/⌘+K), hand-drawn SVG hero illustration, and loan category cards.
 - Dedicated mortgage, auto, personal (with origination fee → APR) and student loan calculators.
 - Three guides, FAQ, About, Contact, Privacy, Terms, Cookie Policy, Disclaimer and a custom 404 page.
 - Cookie consent banner and settings dialog. Optional scripts load only after consent, and none are configured.
@@ -29,7 +30,7 @@ npm test            # unit tests for the loan math and validation (Node's built-
 
 ## Before launch — required
 
-1. **Domain:** set `url` in [`lib/site-config.ts`](lib/site-config.ts). It is currently the placeholder `https://www.loancalculator.example`, which is used for canonical URLs, the sitemap, robots.txt and structured data.
+1. **Domain:** set `url` in [`lib/site-config.ts`](lib/site-config.ts). It is currently the placeholder `https://www.loancalm.example`, which is used for canonical URLs, the sitemap, robots.txt and structured data.
 2. **Contact email:** set `contactEmail` in `lib/site-config.ts`. Until you do, the Contact page shows a "coming soon" notice instead of an email address or form.
 3. **Legal review:** have the Privacy Policy, Terms, Cookie Policy and Disclaimer reviewed for your jurisdiction. Optionally set `legal.governingLaw`. Update `legalUpdated` whenever the policies change.
 4. **Hosting logs:** the Privacy Policy describes typical host request logs in general terms. Confirm it matches your host's actual practices.
@@ -47,8 +48,10 @@ Any Node host that supports Next.js works, for example Vercel, Netlify or a Node
 ```
 app/                    Routes, layout, sitemap.ts, robots.ts, opengraph-image.tsx, icon.svg
   [slug]/page.tsx       The four loan-type calculator pages (static, from data/loan-types.ts)
+                        /mortgage-calculator permanently redirects to /mortgage-loan-calculator (next.config.ts)
   guides/               Guide index and guide pages (from data/guides.ts)
-components/             Calculator, schedule, header/footer, cookie consent, breadcrumbs, FAQ, page shells
+components/             Calculator, result panel, amortization table, category cards, hero illustration,
+                        header/footer, site search, cookie consent, breadcrumbs, FAQ, page shells
 lib/
   loan-math.ts          Pure amortization math (payment, schedule, APR estimate) — unit tested
   loan-validation.ts    Input parsing and validation — unit tested
@@ -56,6 +59,7 @@ lib/
   site-config.ts        Site name, domain, email, navigation  ← edit this
   seo.ts                Metadata and JSON-LD helpers
   consent.ts            Consent storage (localStorage key "lc-consent")
+  search-index.ts       Static search index for the header search (built from data/)
 data/                   Page content: loan types, guides, FAQs
 types/                  Shared content types
 tests/                  Unit tests

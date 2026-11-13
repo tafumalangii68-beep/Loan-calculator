@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { LoanCalculator } from "@/components/loan-calculator";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { FaqList } from "@/components/faq-list";
-import { CardLink, Container, Sections, SourceList } from "@/components/content-blocks";
+import { Container, Sections, SourceList } from "@/components/content-blocks";
+import { LoanCategoryCards } from "@/components/loan-category-cards";
 import { ScenarioTable } from "@/components/scenario-table";
 import { JsonLd } from "@/components/json-ld";
 import { getLoanType, loanTypes } from "@/data/loan-types";
@@ -23,7 +24,6 @@ export async function generateMetadata({ params }: PageProps<"/[slug]">) {
     title: page.metaTitle,
     description: page.metaDescription,
     path: `/${page.slug}`,
-    absoluteTitle: true,
   });
 }
 
@@ -33,7 +33,6 @@ export default async function LoanTypePage({ params }: PageProps<"/[slug]">) {
   if (!page) notFound();
 
   const path = `/${page.slug}`;
-  const related = page.related.map((s) => getLoanType(s)).filter((p) => p !== undefined);
 
   return (
     <>
@@ -41,7 +40,7 @@ export default async function LoanTypePage({ params }: PageProps<"/[slug]">) {
       <Container className="pt-8 pb-12">
         <Breadcrumbs
           items={[
-            { name: "Loan Calculator", path: "/" },
+            { name: "Home", path: "/" },
             { name: page.h1, path },
           ]}
         />
@@ -90,14 +89,10 @@ export default async function LoanTypePage({ params }: PageProps<"/[slug]">) {
       </Container>
 
       <Container className="mt-16">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="font-serif text-2xl font-semibold tracking-tight">Related calculators</h2>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            {related.map((r) => (
-              <CardLink key={r.slug} href={`/${r.slug}`} title={r.h1}>
-                {r.cardSummary}
-              </CardLink>
-            ))}
+        <div>
+          <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">Other loan calculators</h2>
+          <div className="mt-6">
+            <LoanCategoryCards exclude={path} />
           </div>
           <p className="mt-6 text-sm text-muted">
             Have a different kind of loan? Use the general <Link href="/" className="link">loan payment calculator</Link>.

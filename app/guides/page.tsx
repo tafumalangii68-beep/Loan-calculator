@@ -15,7 +15,7 @@ export default function GuidesPage() {
     <Container className="pt-8">
       <Breadcrumbs
         items={[
-          { name: "Loan Calculator", path: "/" },
+          { name: "Home", path: "/" },
           { name: "Guides", path: "/guides" },
         ]}
       />

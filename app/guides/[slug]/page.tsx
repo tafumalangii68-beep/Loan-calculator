@@ -23,7 +23,6 @@ export async function generateMetadata({ params }: PageProps<"/guides/[slug]">) 
     description: guide.metaDescription,
     path: `/guides/${guide.slug}`,
     type: "article",
-    absoluteTitle: true,
   });
 }
 
@@ -60,7 +59,7 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
       />
       <Breadcrumbs
         items={[
-          { name: "Loan Calculator", path: "/" },
+          { name: "Home", path: "/" },
           { name: "Guides", path: "/guides" },
           { name: guide.title, path },
         ]}

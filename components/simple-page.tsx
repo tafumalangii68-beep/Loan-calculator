@@ -22,7 +22,7 @@ export function SimplePage({
     <Container className="pt-8">
       <Breadcrumbs
         items={[
-          { name: "Loan Calculator", path: "/" },
+          { name: "Home", path: "/" },
           { name: title, path },
         ]}
       />

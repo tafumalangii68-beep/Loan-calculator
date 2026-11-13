@@ -5,13 +5,12 @@ import { Logo } from "./logo";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-24 border-t border-line bg-white">
+    <footer className="mt-24 border-t border-line bg-beige/60">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div className="max-w-xs">
-          <p className="flex items-center gap-2 font-semibold text-ink">
+          <Link href="/" className="inline-block rounded-md" aria-label={`${siteConfig.name} — home`}>
             <Logo />
-            {siteConfig.name}
-          </p>
+          </Link>
           <p className="mt-3 text-sm leading-relaxed text-muted">
             Free, private loan calculators and plain-English guides. Results are estimates for general information,
             not financial advice or a loan offer.

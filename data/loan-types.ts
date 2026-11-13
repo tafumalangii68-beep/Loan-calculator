@@ -38,11 +38,11 @@ const CFPB_CREDIT: Source = {
 
 export const loanTypes: LoanTypePage[] = [
   {
-    slug: "mortgage-calculator",
+    slug: "mortgage-loan-calculator",
     preset: "mortgage",
     shortName: "Mortgage",
-    h1: "Mortgage Calculator",
-    metaTitle: "Mortgage Calculator: Principal & Interest Payment",
+    h1: "Mortgage Loan Calculator",
+    metaTitle: "Mortgage Loan Calculator: Principal & Interest",
     metaDescription:
       "Estimate your monthly mortgage principal and interest from home price, down payment, rate and term. See total interest, 15- vs 30-year comparisons and a full schedule.",
     intro:
@@ -116,7 +116,6 @@ export const loanTypes: LoanTypePage[] = [
       },
     ],
     sources: [CFPB_HOME, CFPB_MORTGAGES, REG_Z],
-    related: ["auto-loan-calculator", "personal-loan-calculator"],
   },
   {
     slug: "auto-loan-calculator",
@@ -190,7 +189,6 @@ export const loanTypes: LoanTypePage[] = [
       },
     ],
     sources: [CFPB_AUTO, REG_Z],
-    related: ["personal-loan-calculator", "mortgage-calculator"],
   },
   {
     slug: "personal-loan-calculator",
@@ -271,7 +269,6 @@ export const loanTypes: LoanTypePage[] = [
       },
     ],
     sources: [REG_Z, CFPB_CREDIT],
-    related: ["auto-loan-calculator", "student-loan-calculator"],
   },
   {
     slug: "student-loan-calculator",
@@ -345,7 +342,6 @@ export const loanTypes: LoanTypePage[] = [
       },
     ],
     sources: [STUDENTAID_REPAY, CFPB_STUDENT],
-    related: ["personal-loan-calculator", "mortgage-calculator"],
   },
 ];
 
