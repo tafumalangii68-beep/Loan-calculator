@@ -11,7 +11,7 @@
 export const siteConfig = {
   name: "LoanCalm",
   /** Canonical origin used for canonical URLs, the sitemap and structured data. */
-  url: "https://www.loancalm.example",
+  url: "https://www.loancalculator.pro",
   tagline: "Loan Calculator & Planning",
   description:
     "LoanCalm is a free loan calculator that shows your monthly payment, total interest and a month-by-month amortization schedule. Runs entirely in your browser — no sign-up.",
