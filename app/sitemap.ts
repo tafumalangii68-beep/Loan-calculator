@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { loanTypes } from "@/data/loan-types";
 import { guides } from "@/data/guides";
+import { countries } from "@/data/countries";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 
 export const dynamic = "force-static";
@@ -12,10 +13,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority,
   });
   const launched = "2026-11-13";
+  const europeLaunched = "2026-11-17";
 
   return [
     page("/", launched, 1),
     ...loanTypes.map((p) => page(`/${p.slug}`, launched, 0.9)),
+    page("/countries", europeLaunched, 0.8),
+    ...countries.map((c) => page(`/${c.slug}`, europeLaunched, 0.8)),
     page("/guides", launched, 0.6),
     ...guides.map((g) => page(`/guides/${g.slug}`, g.updated, 0.7)),
     page("/faq", launched, 0.5),

@@ -1,12 +1,24 @@
 import { calculateLoan, formatDuration } from "@/lib/loan-math";
-import { formatCurrency, formatCurrencyWhole, formatPercent } from "@/lib/format";
+import { formatPercent } from "@/lib/format";
+import { makeMoney, USD, type CurrencyFormat } from "@/lib/money";
 import type { Scenario } from "@/types/content";
 
 /**
  * Worked examples, computed at build time with the same functions as the
  * calculator so the numbers on the page always match the tool.
  */
-export function ScenarioTable({ scenarios, caption }: { scenarios: Scenario[]; caption: string }) {
+export function ScenarioTable({
+  scenarios,
+  caption,
+  currency = USD,
+  paymentLabel = "Monthly payment",
+}: {
+  scenarios: Scenario[];
+  caption: string;
+  currency?: CurrencyFormat;
+  paymentLabel?: string;
+}) {
+  const { format: formatCurrency, formatWhole: formatCurrencyWhole } = makeMoney(currency);
   const rows = scenarios.map((s) => ({ s, r: calculateLoan(s.principal, s.ratePercent, s.termMonths, s.extraMonthly ?? 0) }));
   const showExtra = scenarios.some((s) => s.extraMonthly);
 
@@ -21,7 +33,7 @@ export function ScenarioTable({ scenarios, caption }: { scenarios: Scenario[]; c
             <th scope="col" className="px-4 py-2.5 text-right font-medium">Rate</th>
             <th scope="col" className="px-4 py-2.5 text-right font-medium">Term</th>
             {showExtra && <th scope="col" className="px-4 py-2.5 text-right font-medium">Paid off in</th>}
-            <th scope="col" className="px-4 py-2.5 text-right font-medium">Monthly payment</th>
+            <th scope="col" className="px-4 py-2.5 text-right font-medium">{paymentLabel}</th>
             <th scope="col" className="px-4 py-2.5 text-right font-medium">Total interest</th>
           </tr>
         </thead>

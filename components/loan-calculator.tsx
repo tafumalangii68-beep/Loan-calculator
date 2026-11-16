@@ -2,28 +2,53 @@
 
 import { useId, useMemo, useRef, useState, type FormEvent } from "react";
 import { Calculator, ChevronDown, RotateCcw, ShieldCheck } from "lucide-react";
-import { calculateLoan, estimateApr } from "@/lib/loan-math";
+import { calculateLoan, estimateApr, FREQUENCIES, type Frequency } from "@/lib/loan-math";
 import { validateLoanForm, type LoanField, type LoanFormValues, type TermUnit } from "@/lib/loan-validation";
-import { calculatorPresets, type PresetKey } from "@/lib/calculator-presets";
+import { calculatorPresets, type CalculatorPreset, type PresetKey } from "@/lib/calculator-presets";
+import { makeMoney, USD, type CurrencyFormat } from "@/lib/money";
 import { ResultPanel } from "./result-panel";
 import { AmortizationSchedule } from "./amortization-schedule";
 
 const FIELD_ORDER: LoanField[] = ["amount", "downPayment", "rate", "term", "extra", "feePercent"];
 
+export const FREQUENCY_LABELS: Record<Frequency, { adjective: string; unit: string }> = {
+  monthly: { adjective: "Monthly", unit: "month" },
+  quarterly: { adjective: "Quarterly", unit: "quarter" },
+  fortnightly: { adjective: "Fortnightly", unit: "fortnight" },
+  weekly: { adjective: "Weekly", unit: "week" },
+};
+
 /**
  * Loan calculator. Results update instantly as valid values are typed.
  * Errors appear once a field has been left (blur) or after "Calculate loan"
  * is pressed, so people aren't scolded halfway through typing.
+ *
+ * `currency` switches symbols and number formatting (US dollars by default);
+ * `showFrequency` adds a repayment-frequency choice (monthly only by default).
  */
-export function LoanCalculator({ preset: presetKey = "general" }: { preset?: PresetKey }) {
-  const preset = calculatorPresets[presetKey];
+export function LoanCalculator({
+  preset: presetProp = "general",
+  currency = USD,
+  showFrequency = false,
+}: {
+  preset?: PresetKey | CalculatorPreset;
+  currency?: CurrencyFormat;
+  showFrequency?: boolean;
+}) {
+  const preset = typeof presetProp === "string" ? calculatorPresets[presetProp] : presetProp;
+  const money = makeMoney(currency);
   const id = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const resultsRef = useRef<HTMLElement>(null);
 
   const [values, setValues] = useState<LoanFormValues>(preset.defaults);
+  const [frequency, setFrequency] = useState<Frequency>("monthly");
   const [touched, setTouched] = useState<Partial<Record<LoanField, boolean>>>({});
   const [submitted, setSubmitted] = useState(false);
+  const periodsPerYear = FREQUENCIES[frequency];
+  const freq = FREQUENCY_LABELS[frequency];
+  const paymentWord = preset.paymentWord ?? "payment";
+  const symbolIsShort = money.symbol.length === 1;
 
   const validation = useMemo(
     () =>
@@ -31,20 +56,33 @@ export function LoanCalculator({ preset: presetKey = "general" }: { preset?: Pre
         hasDownPayment: preset.hasDownPayment,
         hasFee: preset.hasFee,
         amountLabel: preset.amountLabel,
+        downPaymentLabel: preset.downPaymentLabel || undefined,
+        periodsPerYear,
+        maxAmount: preset.maxAmount,
+        formatMoney: currency === USD ? undefined : money.formatWhole,
       }),
-    [values, preset],
+    [values, preset, periodsPerYear, money, currency],
   );
 
   const computed = useMemo(() => {
     if (!validation.ok) return null;
     const input = validation.value;
-    const result = calculateLoan(input.principal, input.annualRatePercent, input.termMonths, input.extraMonthly);
+    const result = calculateLoan(
+      input.principal,
+      input.annualRatePercent,
+      input.payments,
+      input.extraMonthly,
+      input.periodsPerYear,
+    );
     const apr =
       input.feePercent > 0
-        ? estimateApr(input.principal, input.annualRatePercent, input.termMonths, (input.principal * input.feePercent) / 100)
+        ? estimateApr(input.principal, input.annualRatePercent, input.payments, (input.principal * input.feePercent) / 100, {
+            periodsPerYear: input.periodsPerYear,
+            effective: preset.aprEffective,
+          })
         : null;
     return { input, result, apr };
-  }, [validation]);
+  }, [validation, preset.aprEffective]);
 
   const allErrors = validation.ok ? {} : validation.errors;
   const visibleError = (field: LoanField) => (submitted || touched[field] ? allErrors[field] : undefined);
@@ -71,9 +109,13 @@ export function LoanCalculator({ preset: presetKey = "general" }: { preset?: Pre
 
   const handleReset = () => {
     setValues(preset.defaults);
+    setFrequency("monthly");
     setTouched({});
     setSubmitted(false);
   };
+
+  // "$", "€", "£" fit in front of the number; "CHF", "kr", "zł" read better after it.
+  const currencyAffix = symbolIsShort ? { prefix: money.symbol } : { suffix: money.symbol };
 
   const fieldProps = (field: LoanField, key: keyof LoanFormValues = field) => ({
     id: `${id}-${field}`,
@@ -94,14 +136,14 @@ export function LoanCalculator({ preset: presetKey = "general" }: { preset?: Pre
             </div>
           )}
 
-          <Field {...fieldProps("amount")} label={preset.amountLabel} hint={preset.amountHint} prefix="$" required />
+          <Field {...fieldProps("amount")} label={preset.amountLabel} hint={preset.amountHint} {...currencyAffix} required />
 
           {preset.hasDownPayment && (
             <Field
               {...fieldProps("downPayment")}
               label={preset.downPaymentLabel}
               hint={preset.downPaymentHint}
-              prefix="$"
+              {...currencyAffix}
               optional
             />
           )}
@@ -159,11 +201,41 @@ export function LoanCalculator({ preset: presetKey = "general" }: { preset?: Pre
             {visibleError("term") && <FieldError id={`${id}-term-error`} message={visibleError("term")!} />}
           </div>
 
+          {showFrequency && (
+            <div>
+              <label htmlFor={`${id}-frequency`} className="block text-sm font-medium text-ink">
+                Repayment frequency
+              </label>
+              <p id={`${id}-frequency-hint`} className="mt-0.5 text-xs text-muted">
+                How often you pay. The annual rate is divided by the number of {paymentWord}s per year.
+              </p>
+              <div className="relative mt-1.5">
+                <select
+                  id={`${id}-frequency`}
+                  value={frequency}
+                  onChange={(e) => setFrequency(e.target.value as Frequency)}
+                  aria-describedby={`${id}-frequency-hint`}
+                  className={`${inputClass(false)} appearance-none pr-10`}
+                >
+                  {(Object.keys(FREQUENCIES) as Frequency[]).map((f) => (
+                    <option key={f} value={f}>
+                      {FREQUENCY_LABELS[f].adjective} ({FREQUENCIES[f]} per year)
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  aria-hidden="true"
+                  className="pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 text-muted"
+                />
+              </div>
+            </div>
+          )}
+
           {preset.hasFee && (
             <Field
               {...fieldProps("feePercent")}
-              label="Origination fee"
-              hint="Upfront fee as a % of the loan, deducted from the money you receive."
+              label={preset.feeLabel ?? "Origination fee"}
+              hint={preset.feeHint ?? "Upfront fee as a % of the loan, deducted from the money you receive."}
               suffix="%"
               optional
             />
@@ -171,15 +243,15 @@ export function LoanCalculator({ preset: presetKey = "general" }: { preset?: Pre
 
           <details className="group rounded-xl border border-line bg-paper px-4 py-3">
             <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-medium text-ink">
-              Extra monthly payment
+              Extra {freq.adjective.toLowerCase()} {paymentWord}
               <ChevronDown aria-hidden="true" className="size-4 text-muted transition-transform group-open:rotate-180" />
             </summary>
             <div className="mt-3">
               <Field
                 {...fieldProps("extra")}
-                label="Extra amount each month"
-                hint="Paid on top of the required payment and applied to principal."
-                prefix="$"
+                label={`Extra amount each ${freq.unit}`}
+                hint={`Paid on top of the required ${paymentWord} and applied to principal.`}
+                {...currencyAffix}
                 optional
               />
             </div>
@@ -207,11 +279,28 @@ export function LoanCalculator({ preset: presetKey = "general" }: { preset?: Pre
           <h2 id={`${id}-results`} className="sr-only">
             Your results
           </h2>
-          <ResultPanel computed={computed} excludes={preset.excludes} />
+          <ResultPanel
+            computed={computed}
+            excludes={preset.excludes}
+            currency={currency}
+            labels={{
+              payment: `${freq.adjective} ${paymentWord}`,
+              unit: freq.unit,
+              // European presets call it a deposit; the US ones keep "Down payment".
+              downPayment: paymentWord === "repayment" ? "Deposit" : undefined,
+              apr: preset.aprLabel,
+            }}
+          />
         </section>
       </div>
 
-      {computed && <AmortizationSchedule result={computed.result} />}
+      {computed && (
+        <AmortizationSchedule
+          result={computed.result}
+          currency={currency}
+          paymentLabel={`${freq.adjective} ${paymentWord}`}
+        />
+      )}
     </div>
   );
 }
@@ -276,7 +365,7 @@ function Field({ id, name, label, hint, value, error, prefix, suffix, required, 
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           aria-required={required ? true : undefined}
-          className={`${inputClass(Boolean(error))} ${prefix ? "pl-8" : ""} ${suffix ? "pr-9" : ""}`}
+          className={`${inputClass(Boolean(error))} ${prefix ? "pl-8" : ""} ${suffix ? (suffix.length > 1 ? "pr-14" : "pr-9") : ""}`}
         />
         {suffix && (
           <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-3.5 flex items-center text-muted">

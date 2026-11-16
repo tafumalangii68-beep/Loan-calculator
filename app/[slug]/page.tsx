@@ -10,16 +10,23 @@ import { LoanCategoryCards } from "@/components/loan-category-cards";
 import { ScenarioTable } from "@/components/scenario-table";
 import { JsonLd } from "@/components/json-ld";
 import { getLoanType, loanTypes } from "@/data/loan-types";
+import { countries, getCountry } from "@/data/countries";
+import { CountryPage, countryMetadata } from "@/components/country-page";
 import { buildMetadata, webPageJsonLd } from "@/lib/seo";
 
 export const dynamicParams = false;
 
+// One root-level dynamic segment serves two kinds of page: the US loan-type
+// calculators (/mortgage-loan-calculator, …) and the European country pages
+// (/uk, /de, …). Next.js allows only one dynamic segment per level.
 export function generateStaticParams() {
-  return loanTypes.map((page) => ({ slug: page.slug }));
+  return [...loanTypes.map((page) => ({ slug: page.slug })), ...countries.map((c) => ({ slug: c.slug }))];
 }
 
 export async function generateMetadata({ params }: PageProps<"/[slug]">) {
   const { slug } = await params;
+  const country = getCountry(slug);
+  if (country) return countryMetadata(country);
   const page = getLoanType(slug);
   if (!page) return {};
   return buildMetadata({
@@ -31,6 +38,8 @@ export async function generateMetadata({ params }: PageProps<"/[slug]">) {
 
 export default async function LoanTypePage({ params }: PageProps<"/[slug]">) {
   const { slug } = await params;
+  const country = getCountry(slug);
+  if (country) return <CountryPage country={country} />;
   const page = getLoanType(slug);
   if (!page) notFound();
 

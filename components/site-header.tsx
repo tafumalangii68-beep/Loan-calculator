@@ -26,7 +26,7 @@ export function SiteHeader() {
                 ) : (
                   <Link
                     href={link.href}
-                    className="rounded-md px-3 py-2 text-ink/80 transition-colors hover:bg-beige hover:text-ink"
+                    className="rounded-md px-2.5 py-2 text-ink/80 transition-colors hover:bg-beige hover:text-ink xl:px-3"
                   >
                     {link.label}
                   </Link>
@@ -38,7 +38,7 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-1.5">
           <SiteSearch index={searchIndex} />
-          <Link href="/contact" className="btn-primary hidden rounded-full px-5 sm:inline-flex">
+          <Link href="/contact" className="btn-primary hidden rounded-full px-5 whitespace-nowrap sm:inline-flex">
             Contact Us
           </Link>
           <MobileNav

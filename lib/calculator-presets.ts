@@ -14,6 +14,16 @@ export interface CalculatorPreset {
   defaults: LoanFormValues;
   /** Sentence shown under the result describing what the payment excludes. */
   excludes: string;
+  /** "payment" (US) or "repayment" (UK/European usage). */
+  paymentWord?: "payment" | "repayment";
+  /** Label for the APR estimate, e.g. "Estimated APRC (TAEG)". */
+  aprLabel?: string;
+  /** Annualise the APR estimate as an effective rate (EU/UK APRC method). */
+  aprEffective?: boolean;
+  feeLabel?: string;
+  feeHint?: string;
+  /** Largest amount accepted, in the calculator's currency. */
+  maxAmount?: number;
 }
 
 const empty = { downPayment: "", extra: "", feePercent: "" };

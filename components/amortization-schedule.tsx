@@ -3,17 +3,29 @@
 import { useId, useState } from "react";
 import { ChevronDown, TableProperties } from "lucide-react";
 import type { LoanResult } from "@/lib/loan-math";
-import { formatCurrency } from "@/lib/format";
+import { makeMoney, USD, type CurrencyFormat } from "@/lib/money";
 
 type View = "monthly" | "yearly";
 
 const th = "px-4 py-2.5 font-medium";
 const td = "px-4 py-2";
 
-export function AmortizationSchedule({ result }: { result: LoanResult }) {
+export function AmortizationSchedule({
+  result,
+  currency = USD,
+  paymentLabel = "Monthly payment",
+}: {
+  result: LoanResult;
+  currency?: CurrencyFormat;
+  /** Column heading for each payment, e.g. "Weekly repayment" */
+  paymentLabel?: string;
+}) {
+  const { format: formatCurrency } = makeMoney(currency);
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<View>("monthly");
   const panelId = useId();
+  // The per-payment view is called "monthly" for monthly loans, "per payment" otherwise.
+  const viewLabel = (v: View) => (v === "monthly" && result.periodsPerYear !== 12 ? "per payment" : v);
 
   const totalPrincipal = result.schedule.reduce((s, r) => s + r.principal + r.extra, 0);
   const hasExtra = result.extraMonthly > 0;
@@ -44,7 +56,7 @@ export function AmortizationSchedule({ result }: { result: LoanResult }) {
                   view === option ? "bg-accent text-white" : "text-muted hover:text-ink"
                 }`}
               >
-                {option}
+                {viewLabel(option)}
               </button>
             ))}
           </div>
@@ -66,7 +78,7 @@ export function AmortizationSchedule({ result }: { result: LoanResult }) {
           >
             <table className="w-full min-w-[34rem] text-right text-sm tabular-nums">
               <caption className="sr-only">
-                {view === "monthly" ? "Monthly amortization schedule" : "Amortization schedule by year"}
+                {view === "monthly" ? `Amortization schedule, ${paymentLabel.toLowerCase()}s` : "Amortization schedule by year"}
               </caption>
               <thead className="sticky top-0 bg-beige text-xs text-muted">
                 <tr>
@@ -74,7 +86,7 @@ export function AmortizationSchedule({ result }: { result: LoanResult }) {
                     {view === "monthly" ? "Payment no." : "Year"}
                   </th>
                   <th scope="col" className={th}>
-                    {view === "monthly" ? "Monthly payment" : "Paid this year"}
+                    {view === "monthly" ? paymentLabel : "Paid this year"}
                   </th>
                   <th scope="col" className={th}>Principal</th>
                   <th scope="col" className={th}>Interest</th>

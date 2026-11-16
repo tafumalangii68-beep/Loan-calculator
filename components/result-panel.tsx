@@ -1,6 +1,7 @@
-import { formatDuration, type LoanResult } from "@/lib/loan-math";
+import { formatPeriods, type LoanResult } from "@/lib/loan-math";
 import type { ParsedLoan } from "@/lib/loan-validation";
-import { formatCurrency, formatPercent } from "@/lib/format";
+import { formatPercent } from "@/lib/format";
+import { makeMoney, USD, type CurrencyFormat } from "@/lib/money";
 
 export interface ComputedLoan {
   input: ParsedLoan;
@@ -8,39 +9,64 @@ export interface ComputedLoan {
   apr: number | null;
 }
 
-export function ResultPanel({ computed, excludes }: { computed: ComputedLoan | null; excludes: string }) {
+export interface ResultLabels {
+  /** Heading of the main figure, e.g. "Monthly payment" or "Weekly repayment" */
+  payment?: string;
+  /** Payment period, e.g. "month" */
+  unit?: string;
+  downPayment?: string;
+  apr?: string;
+}
+
+export function ResultPanel({
+  computed,
+  excludes,
+  currency = USD,
+  labels = {},
+}: {
+  computed: ComputedLoan | null;
+  excludes: string;
+  currency?: CurrencyFormat;
+  labels?: ResultLabels;
+}) {
+  const { format: formatCurrency } = makeMoney(currency);
+  const paymentLabel = labels.payment ?? "Monthly payment";
+  const unit = labels.unit ?? "month";
+
   if (!computed) {
     return (
       <div
         aria-live="polite"
         className="flex h-full min-h-72 items-center justify-center rounded-2xl border border-dashed border-line-strong bg-paper p-6 text-center text-sm leading-relaxed text-muted"
       >
-        Enter a valid loan amount, interest rate and term to see your monthly payment.
+        Enter a valid loan amount, interest rate and term to see your {paymentLabel.toLowerCase()}.
       </div>
     );
   }
 
   const { input, result, apr } = computed;
+  const ppy = result.periodsPerYear;
   const hasExtra = input.extraMonthly > 0;
   const interestShare = result.totalPaid > 0 ? (result.totalInterest / result.totalPaid) * 100 : 0;
   const downPercent = input.price ? (input.downPayment / input.price) * 100 : null;
   const r = result.monthlyRate;
+  const rateWord = ppy === 12 ? "Monthly rate" : `Rate per ${unit}`;
 
   return (
     <div>
       <div className="rounded-2xl bg-accent-soft p-6">
-        <p className="text-sm font-medium text-accent">Monthly payment</p>
+        <p className="text-sm font-medium text-accent">{paymentLabel}</p>
         <p
           aria-live="polite"
           data-testid="monthly-payment"
-          className="mt-1 font-serif text-5xl font-semibold tracking-tight text-ink tabular-nums sm:text-[3.5rem]"
+          className="mt-1 font-serif text-5xl font-semibold tracking-tight break-words text-ink tabular-nums sm:text-[3.5rem]"
         >
           {formatCurrency(result.scheduledPayment)}
         </p>
         {hasExtra && (
           <p className="mt-1 text-sm text-ink">
             + {formatCurrency(input.extraMonthly)} extra = {formatCurrency(result.scheduledPayment + input.extraMonthly)}{" "}
-            per month
+            per {unit}
           </p>
         )}
         <p className="mt-3 text-xs leading-relaxed text-muted">{excludes}</p>
@@ -49,17 +75,23 @@ export function ResultPanel({ computed, excludes }: { computed: ComputedLoan | n
       <dl className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line text-sm [&>*:last-child:nth-child(odd)]:col-span-2">
         <Stat label="Amount borrowed" value={formatCurrency(input.principal)} />
         <Stat label="Total interest" value={formatCurrency(result.totalInterest)} />
-        <Stat label="Total payments" value={formatCurrency(result.totalPaid)} />
-        <Stat label="Payoff duration" value={formatDuration(result.payoffMonths)} />
-        {downPercent !== null && <Stat label="Down payment" value={`${formatPercent(downPercent, 1)} of price`} />}
-        {apr !== null && <Stat label="Estimated APR" value={formatPercent(apr)} />}
+        <Stat
+          label={paymentLabel.endsWith("repayment") ? "Total repaid" : "Total payments"}
+          value={formatCurrency(result.totalPaid)}
+        />
+        <Stat label="Payoff duration" value={formatPeriods(result.payoffMonths, ppy)} />
+        {ppy !== 12 && <Stat label="Number of payments" value={String(result.payoffMonths)} />}
+        {downPercent !== null && (
+          <Stat label={labels.downPayment ?? "Down payment"} value={`${formatPercent(downPercent, 1)} of price`} />
+        )}
+        {apr !== null && <Stat label={labels.apr ?? "Estimated APR"} value={formatPercent(apr)} />}
       </dl>
 
       {hasExtra && result.interestSaved > 0 && (
         <p className="mt-4 rounded-2xl border border-accent/20 bg-white p-4 text-sm leading-relaxed text-ink">
-          Paying {formatCurrency(input.extraMonthly)} extra each month saves about{" "}
+          Paying {formatCurrency(input.extraMonthly)} extra each {unit} saves about{" "}
           <strong>{formatCurrency(result.interestSaved)}</strong> in interest and pays the loan off{" "}
-          <strong>{formatDuration(result.monthsSaved)}</strong> sooner, if your lender applies extra payments to
+          <strong>{formatPeriods(result.monthsSaved, ppy)}</strong> sooner, if your lender applies extra payments to
           principal.
         </p>
       )}
@@ -89,18 +121,18 @@ export function ResultPanel({ computed, excludes }: { computed: ComputedLoan | n
         <summary className="cursor-pointer font-medium text-ink">How this was calculated</summary>
         <div className="mt-3 space-y-2 leading-relaxed text-muted">
           <p>
-            Monthly rate <em>r</em> = {formatPercent(input.annualRatePercent, 3)} ÷ 12 = {r === 0 ? "0" : r.toFixed(6)}.
-            Number of payments <em>n</em> = {input.termMonths}.
+            {rateWord} <em>r</em> = {formatPercent(input.annualRatePercent, 3)} ÷ {ppy} = {r === 0 ? "0" : r.toFixed(6)}.
+            Number of payments <em>n</em> = {input.payments}.
           </p>
           {r === 0 ? (
             <p>
               With a 0% rate the payment is the amount borrowed divided by the number of payments:{" "}
-              {formatCurrency(input.principal)} ÷ {input.termMonths} = {formatCurrency(result.scheduledPayment)}.
+              {formatCurrency(input.principal)} ÷ {input.payments} = {formatCurrency(result.scheduledPayment)}.
             </p>
           ) : (
             <p>
               Payment = P × r(1 + r)<sup>n</sup> ÷ ((1 + r)<sup>n</sup> − 1), where P = {formatCurrency(input.principal)}.
-              Each month, interest is charged on the remaining balance and the rest of the payment reduces the balance.
+              Each {unit}, interest is charged on the remaining balance and the rest of the payment reduces the balance.
             </p>
           )}
           {apr !== null && (
@@ -121,7 +153,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-white p-4">
       <dt className="text-xs text-muted">{label}</dt>
-      <dd className="mt-1 text-base font-semibold text-ink tabular-nums">{value}</dd>
+      <dd className="mt-1 text-base font-semibold break-words text-ink tabular-nums">{value}</dd>
     </div>
   );
 }

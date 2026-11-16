@@ -9,6 +9,9 @@ import { GuideCards } from "@/components/guide-cards";
 import { ScenarioTable } from "@/components/scenario-table";
 import { JsonLd } from "@/components/json-ld";
 import { homeFaqs } from "@/data/faqs";
+import { countries, selectorCountries } from "@/data/countries";
+import { CountryCards } from "@/components/country-cards";
+import { CountrySelector } from "@/components/country-selector";
 import { calculateLoan } from "@/lib/loan-math";
 import { formatCurrency } from "@/lib/format";
 import { buildMetadata, webPageJsonLd } from "@/lib/seo";
@@ -62,7 +65,10 @@ export default function HomePage() {
               Calculate your monthly payment, total interest, and loan cost for any type of loan. Compare options and
               plan your finances with confidence.
             </p>
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="mt-6 max-w-xl">
+              <CountrySelector countries={selectorCountries()} />
+            </div>
+            <div className="mt-6 flex flex-wrap gap-3">
               <a href="#calculator" className="btn-primary h-12 gap-2 rounded-full px-6">
                 <Calculator aria-hidden="true" className="size-4" />
                 Try the loan calculator
@@ -119,6 +125,30 @@ export default function HomePage() {
           />
           <div className="mt-8">
             <LoanCategoryCards />
+          </div>
+        </section>
+      </Container>
+
+      {/* Europe */}
+      <Container className="mt-20">
+        <section aria-labelledby="europe">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <SectionHeading
+              id="europe"
+              eyebrow="Europe"
+              title="Loan Calculators Across Europe"
+              intro={`Calculators for ${countries.length} European countries, each in the local currency and with the local name for the APR.`}
+            />
+            <Link
+              href="/countries"
+              className="inline-flex h-11 items-center gap-2 rounded-full border border-line-strong bg-white px-5 text-sm font-semibold text-ink transition-colors hover:border-accent/50 hover:text-accent"
+            >
+              View All Countries
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          </div>
+          <div className="mt-8">
+            <CountryCards items={countries.filter((c) => c.featured)} />
           </div>
         </section>
       </Container>

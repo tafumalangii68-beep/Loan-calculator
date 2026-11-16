@@ -24,7 +24,7 @@ export function Logo({ showTagline = true }: { showTagline?: boolean }) {
           Loan<span className="text-accent">Calm</span>
         </span>
         {showTagline && (
-          <span className="mt-1 hidden text-[0.68rem] font-medium tracking-wide text-muted sm:block">
+          <span className="mt-1 hidden text-[0.68rem] font-medium tracking-wide text-muted sm:block lg:hidden xl:block">
             {siteConfig.tagline}
           </span>
         )}

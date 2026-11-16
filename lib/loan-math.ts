@@ -43,6 +43,9 @@ export interface LoanResult extends ScheduleSummary {
   annualRatePercent: number;
   termMonths: number;
   extraMonthly: number;
+  /** Payments per year (12 = monthly) */
+  periodsPerYear: number;
+  /** Interest rate per payment period (per month for monthly loans) */
   monthlyRate: number;
   /** Required monthly payment, before any extra payment */
   scheduledPayment: number;
@@ -58,22 +61,46 @@ export interface LoanResult extends ScheduleSummary {
 const PAID_OFF = 0.005;
 
 /**
- * Monthly payment for a fully amortizing fixed-rate loan:
- *   M = P × r(1 + r)^n / ((1 + r)^n − 1)
- * where r is the monthly rate and n the number of payments.
- * With a 0% rate the payment is simply P / n.
+ * Repayment frequencies, as payments per year. The nominal annual rate is
+ * divided by this number to get the rate per payment period.
  */
-export function calculatePayment(principal: number, annualRatePercent: number, termMonths: number): number {
+export const FREQUENCIES = {
+  monthly: 12,
+  quarterly: 4,
+  fortnightly: 26,
+  weekly: 52,
+} as const;
+export type Frequency = keyof typeof FREQUENCIES;
+
+/**
+ * Payment for a fully amortizing fixed-rate loan:
+ *   M = P × r(1 + r)^n / ((1 + r)^n − 1)
+ * where r is the rate per period (annual rate ÷ payments per year) and n the
+ * number of payments. With a 0% rate the payment is simply P / n.
+ * `termMonths` is the number of payments; it equals months for monthly loans.
+ */
+export function calculatePayment(
+  principal: number,
+  annualRatePercent: number,
+  termMonths: number,
+  periodsPerYear = 12,
+): number {
   if (principal <= 0 || termMonths <= 0) return 0;
-  const r = annualRatePercent / 100 / 12;
+  const r = annualRatePercent / 100 / periodsPerYear;
   if (r === 0) return principal / termMonths;
   const growth = Math.pow(1 + r, termMonths);
   return (principal * r * growth) / (growth - 1);
 }
 
-function runSchedule(principal: number, annualRatePercent: number, termMonths: number, extraMonthly: number) {
-  const r = annualRatePercent / 100 / 12;
-  const payment = calculatePayment(principal, annualRatePercent, termMonths);
+function runSchedule(
+  principal: number,
+  annualRatePercent: number,
+  termMonths: number,
+  extraMonthly: number,
+  periodsPerYear: number,
+) {
+  const r = annualRatePercent / 100 / periodsPerYear;
+  const payment = calculatePayment(principal, annualRatePercent, termMonths, periodsPerYear);
   const rows: AmortizationRow[] = [];
   let balance = principal;
 
@@ -107,10 +134,10 @@ function runSchedule(principal: number, annualRatePercent: number, termMonths: n
   return { payment, rows, totalInterest, totalPaid, payoffMonths: rows.length };
 }
 
-export function summarizeByYear(rows: AmortizationRow[]): YearSummary[] {
+export function summarizeByYear(rows: AmortizationRow[], periodsPerYear = 12): YearSummary[] {
   const years: YearSummary[] = [];
   for (const row of rows) {
-    const year = Math.ceil(row.period / 12);
+    const year = Math.ceil(row.period / periodsPerYear);
     let summary = years[year - 1];
     if (!summary) {
       summary = { year, interest: 0, principal: 0, totalPaid: 0, endingBalance: 0 };
@@ -124,27 +151,36 @@ export function summarizeByYear(rows: AmortizationRow[]): YearSummary[] {
   return years;
 }
 
+/**
+ * Full schedule for a fixed-rate loan. With `periodsPerYear` other than 12,
+ * "months" in the field names means payment periods (weeks, quarters, …):
+ * `termMonths` is the number of payments and `extraMonthly` the extra paid
+ * with each payment.
+ */
 export function calculateLoan(
   principal: number,
   annualRatePercent: number,
   termMonths: number,
   extraMonthly = 0,
+  periodsPerYear = 12,
 ): LoanResult {
-  const withExtra = runSchedule(principal, annualRatePercent, termMonths, extraMonthly);
-  const baseline = extraMonthly > 0 ? runSchedule(principal, annualRatePercent, termMonths, 0) : withExtra;
+  const withExtra = runSchedule(principal, annualRatePercent, termMonths, extraMonthly, periodsPerYear);
+  const baseline =
+    extraMonthly > 0 ? runSchedule(principal, annualRatePercent, termMonths, 0, periodsPerYear) : withExtra;
 
   return {
     principal,
     annualRatePercent,
     termMonths,
     extraMonthly,
-    monthlyRate: annualRatePercent / 100 / 12,
+    periodsPerYear,
+    monthlyRate: annualRatePercent / 100 / periodsPerYear,
     scheduledPayment: withExtra.payment,
     payoffMonths: withExtra.payoffMonths,
     totalInterest: withExtra.totalInterest,
     totalPaid: withExtra.totalPaid,
     schedule: withExtra.rows,
-    yearly: summarizeByYear(withExtra.rows),
+    yearly: summarizeByYear(withExtra.rows, periodsPerYear),
     baseline: {
       payoffMonths: baseline.payoffMonths,
       totalInterest: baseline.totalInterest,
@@ -166,10 +202,17 @@ export function estimateApr(
   annualRatePercent: number,
   termMonths: number,
   feeAmount: number,
+  options: { periodsPerYear?: number; effective?: boolean } = {},
 ): number {
-  const payment = calculatePayment(principal, annualRatePercent, termMonths);
+  const { periodsPerYear = 12, effective = false } = options;
+  const payment = calculatePayment(principal, annualRatePercent, termMonths, periodsPerYear);
+  // Effective (EU/UK APRC style) means compounding the periodic rate over a year.
+  const annualize = (periodRate: number) =>
+    effective ? (Math.pow(1 + periodRate, periodsPerYear) - 1) * 100 : periodRate * periodsPerYear * 100;
+  if (feeAmount <= 0 || principal - feeAmount <= 0) {
+    return effective ? annualize(annualRatePercent / 100 / periodsPerYear) : annualRatePercent;
+  }
   const netProceeds = principal - feeAmount;
-  if (feeAmount <= 0 || netProceeds <= 0) return annualRatePercent;
 
   const presentValue = (monthlyRate: number) =>
     monthlyRate === 0
@@ -183,7 +226,13 @@ export function estimateApr(
     if (presentValue(mid) > netProceeds) low = mid;
     else high = mid;
   }
-  return ((low + high) / 2) * 12 * 100;
+  return annualize((low + high) / 2);
+}
+
+/** Duration of `payments` payments at the given frequency, e.g. "4 years 11 months". */
+export function formatPeriods(payments: number, periodsPerYear = 12): string {
+  if (periodsPerYear === 12) return formatDuration(payments);
+  return formatDuration(Math.round((payments * 12) / periodsPerYear));
 }
 
 /** "5 years 3 months", "11 months", "30 years" */

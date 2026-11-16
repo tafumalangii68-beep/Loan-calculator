@@ -1,6 +1,7 @@
 import { loanTypes } from "@/data/loan-types";
 import { guides } from "@/data/guides";
 import { allFaqs } from "@/data/faqs";
+import { countries, COUNTRY_ALIASES } from "@/data/countries";
 
 export interface SearchEntry {
   title: string;
@@ -33,6 +34,20 @@ export function buildSearchIndex(): SearchEntry[] {
       summary: page.cardSummary,
       kind: "Calculator",
       keywords: `${page.shortName} ${page.sections.map((s) => s.heading).join(" ")}`,
+    })),
+    {
+      title: "Loan calculators by country",
+      href: "/countries",
+      summary: "Calculators for European countries in the local currency.",
+      kind: "Countries",
+      keywords: "europe european country currency",
+    },
+    ...countries.map((c) => ({
+      title: `${c.name} loan calculator`,
+      href: `/${c.slug}`,
+      summary: `Loan repayments in ${c.currency}. Explains the ${c.aprShort}.`,
+      kind: "Country",
+      keywords: `${c.code} ${c.currency} ${c.region} ${(COUNTRY_ALIASES[c.code] ?? []).join(" ")} mortgage europe`,
     })),
     ...guides.map((guide) => ({
       title: guide.title,

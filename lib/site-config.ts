@@ -49,6 +49,7 @@ export const mainNav: NavLink[] = [
   { href: "/auto-loan-calculator", label: "Auto", mobileLabel: "Auto loan calculator" },
   { href: "/personal-loan-calculator", label: "Personal", mobileLabel: "Personal loan calculator" },
   { href: "/student-loan-calculator", label: "Student", mobileLabel: "Student loan calculator" },
+  { href: "/countries", label: "Europe", mobileLabel: "Loan calculators by country" },
   { href: "/guides", label: "Blog", mobileLabel: "Blog: all articles" },
   { href: "/faq", label: "FAQ" },
   { href: "/about", label: "About" },
@@ -63,6 +64,7 @@ export const footerNav: { heading: string; links: NavLink[] }[] = [
       { href: "/auto-loan-calculator", label: "Auto loan calculator" },
       { href: "/personal-loan-calculator", label: "Personal loan calculator" },
       { href: "/student-loan-calculator", label: "Student loan calculator" },
+      { href: "/countries", label: "European countries" },
     ],
   },
   {
