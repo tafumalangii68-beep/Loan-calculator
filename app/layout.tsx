@@ -5,7 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { CookieConsent } from "@/components/cookie-consent";
 import { OptionalScripts } from "@/components/optional-scripts";
 import { JsonLd } from "@/components/json-ld";
-import { siteConfig } from "@/lib/site-config";
+import { absoluteUrl, siteConfig } from "@/lib/site-config";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -56,6 +56,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             url: siteConfig.url,
             description: siteConfig.description,
             inLanguage: siteConfig.language,
+            publisher: { "@id": `${siteConfig.url}/#organization` },
+          }}
+        />
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "@id": `${siteConfig.url}/#organization`,
+            name: siteConfig.name,
+            url: siteConfig.url,
+            // Square logo for search results (Google requires at least 112×112).
+            logo: absoluteUrl("/apple-icon.png"),
+            description: siteConfig.description,
           }}
         />
       </body>

@@ -16,7 +16,8 @@ export const siteConfig = {
   description:
     "LoanCalm is a free loan calculator that shows your monthly payment, total interest and a month-by-month amortization schedule. Runs entirely in your browser — no sign-up.",
   locale: "en_US",
-  language: "en-US",
+  // Plain "en": the site serves English readers in the US and across Europe.
+  language: "en",
   country: "United States",
   /** Set to a real address before launch, e.g. "hello@yourdomain.com". */
   contactEmail: null as string | null,
