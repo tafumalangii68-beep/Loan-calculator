@@ -3,6 +3,7 @@ import { Container } from "@/components/content-blocks";
 import { CountryCards } from "@/components/country-cards";
 import { CountrySelector } from "@/components/country-selector";
 import { JsonLd } from "@/components/json-ld";
+import { PageImage } from "@/components/page-image";
 import { countries, countriesByName, REGIONS, selectorCountries } from "@/data/countries";
 import { slugify } from "@/components/content-blocks";
 import { buildMetadata, webPageJsonLd } from "@/lib/seo";
@@ -40,7 +41,7 @@ export default function CountriesPage() {
         ]}
       />
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-end">
+      <div className="mt-6 grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div>
           <h1 className="font-serif text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
             Loan calculators across Europe
@@ -50,10 +51,11 @@ export default function CountriesPage() {
             format, explains how loans are quoted there and lets you calculate mortgage, personal, car, student and
             business loan repayments.
           </p>
+          <div className="mt-6 max-w-xl rounded-3xl border border-line bg-white p-5 sm:p-6">
+            <CountrySelector countries={selectorCountries()} />
+          </div>
         </div>
-        <div className="rounded-3xl border border-line bg-white p-5 sm:p-6">
-          <CountrySelector countries={selectorCountries()} />
-        </div>
+        <PageImage path="/countries" priority sizes="(min-width: 1024px) 50vw, 100vw" />
       </div>
 
       {REGIONS.map((region) => {

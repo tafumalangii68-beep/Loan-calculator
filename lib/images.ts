@@ -49,15 +49,19 @@ export const pageImages: Record<string, SiteImage> = {
   },
   "/guides/apr-names-in-europe": {
     src: "/images/apr-names-in-europe.webp",
-    alt: "Flags of France, Spain, Poland, Germany, Italy and the United Kingdom next to a percent sign",
+    alt: "Loan offer cards with the flags of the EU, Germany, France, Spain and Italy, a percent sign, coins and a map of Europe",
   },
   "/guides/fixed-vs-variable-rates-europe": {
     src: "/images/fixed-vs-variable-rates-europe.webp",
-    alt: "Chart comparing a flat fixed-rate line with a variable rate that rises and falls",
+    alt: "Chart on an easel: a flat fixed-rate line marked with an anchor and a wavy variable-rate line marked with waves",
   },
   "/guides/annuity-vs-linear-repayment": {
     src: "/images/annuity-vs-linear-repayment.webp",
-    alt: "Two bar charts: equal annuity payments on the left, falling linear payments on the right",
+    alt: "Two bar charts: equal annuity repayments on the left and falling linear repayments on the right, with euro coins",
+  },
+  "/countries": {
+    src: "/images/countries.webp",
+    alt: "Map of Europe with location pins, a calculator and gold coins",
   },
   "/about": {
     src: "/images/about.webp",
@@ -75,4 +79,40 @@ export const pageImages: Record<string, SiteImage> = {
 
 export function getPageImage(path: string): SiteImage | undefined {
   return pageImages[path];
+}
+
+/** One illustration per European region, shared by that region's country pages. */
+export const regionImages: Record<string, SiteImage> = {
+  "Western Europe": {
+    src: "/images/region-western-europe.webp",
+    alt: "Canal lined with gabled townhouses and a brick bridge, with a calculator and coins on a table",
+  },
+  "Northern Europe": {
+    src: "/images/region-northern-europe.webp",
+    alt: "Red and yellow wooden houses by a calm lake with pine trees and mountains, with a calculator and coins",
+  },
+  "Southern Europe": {
+    src: "/images/region-southern-europe.webp",
+    alt: "White houses with terracotta roofs above a blue sea, an olive branch, a calculator and coins",
+  },
+  "Central and Eastern Europe": {
+    src: "/images/region-central-eastern-europe.webp",
+    alt: "Old-town square with colourful gabled houses and a clock tower, with a calculator and coins",
+  },
+  "Southeast Europe": {
+    src: "/images/region-southeast-europe.webp",
+    alt: "Stone houses with red roofs on a coastal hill with a fortress and a minaret, a boat, a calculator and coins",
+  },
+};
+
+/** Country pages with their own illustration instead of the region's. */
+const countryImages: Record<string, SiteImage> = {
+  no: {
+    src: "/images/country-norway.webp",
+    alt: "Norwegian flag above red and yellow wooden houses by a fjord, with a calculator and coins",
+  },
+};
+
+export function getCountryImage(slug: string, region: string): SiteImage | undefined {
+  return countryImages[slug] ?? regionImages[region];
 }

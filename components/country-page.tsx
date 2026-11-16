@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
+import { getCountryImage, IMAGE_HEIGHT, IMAGE_WIDTH } from "@/lib/images";
 import { ArrowRight, Info } from "lucide-react";
 import {
   countries,
@@ -69,6 +71,7 @@ export function CountryPage({ country }: { country: Country }) {
   const faqs = countryFaqs(country);
   const neighbours = countries.filter((c) => c.region === country.region && c.slug !== country.slug).slice(0, 8);
   const scenarios = countryScenarios(currency.exampleScale);
+  const image = getCountryImage(country.slug, country.region);
   // Contextual links to the European guides, each linked once per page.
   const linked = new Set<string>();
 
@@ -114,6 +117,17 @@ export function CountryPage({ country }: { country: Country }) {
             </p>
             <h1 className="mt-4 font-serif text-4xl font-semibold tracking-tight text-ink sm:text-5xl">{title}</h1>
             <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted">{country.intro}</p>
+            {image && (
+              <Image
+                src={image.src}
+                alt={image.alt}
+                width={IMAGE_WIDTH}
+                height={IMAGE_HEIGHT}
+                priority
+                sizes="(min-width: 1024px) 640px, 100vw"
+                className="mt-6 hidden h-auto w-full rounded-3xl border border-line sm:block"
+              />
+            )}
           </div>
           <aside aria-labelledby="at-a-glance" className="rounded-3xl border border-line bg-white p-6">
             <div className="flex items-center gap-3">
