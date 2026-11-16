@@ -18,6 +18,7 @@ export default function ContactPage() {
       title="Contact us"
       path="/contact"
       intro="Questions, corrections or ideas for the calculators are all welcome."
+      related
     >
       {email ? (
         <>

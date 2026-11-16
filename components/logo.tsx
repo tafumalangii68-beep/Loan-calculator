@@ -1,13 +1,15 @@
 import { siteConfig } from "@/lib/site-config";
 
-/** LoanCalm mark: a single leaf on a forest-green tile — calm, steady growth. */
+/** LoanCalm mark: three shrinking bars on a green tile — a balance paid down over time. */
 export function LogoMark({ className = "size-8" }: { className?: string }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 32 32" className={`shrink-0 ${className}`}>
       <rect width="32" height="32" rx="9" fill="#205C40" />
-      <path d="M8.5 23.5C8.5 14 14 8.5 23.5 8.5 23.5 18 18 23.5 8.5 23.5Z" fill="#E9F0E4" />
-      <path d="M9.5 22.5 18.5 13.5" stroke="#205C40" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M13.2 18.8h4.3M15.8 16.2v-3.4" stroke="#205C40" strokeWidth="1.3" strokeLinecap="round" opacity=".7" />
+      <g fill="#fff">
+        <rect x="4" y="8" width="24.5" height="4.2" rx="2.1" />
+        <rect x="4" y="14.1" width="17.6" height="4.2" rx="2.1" />
+        <rect x="4" y="20.2" width="12.2" height="4.2" rx="2.1" />
+      </g>
     </svg>
   );
 }

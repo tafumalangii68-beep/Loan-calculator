@@ -2,7 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Article, Container, Sections, SourceList } from "@/components/content-blocks";
+import { GuideCards } from "@/components/guide-cards";
 import { JsonLd } from "@/components/json-ld";
+import { LoanCategoryCards } from "@/components/loan-category-cards";
+import { PageImage } from "@/components/page-image";
+import { getPageImage } from "@/lib/images";
 import { getGuide, guides } from "@/data/guides";
 import { getLoanType } from "@/data/loan-types";
 import { buildMetadata } from "@/lib/seo";
@@ -39,7 +43,7 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
   if (!guide) notFound();
 
   const path = `/guides/${guide.slug}`;
-  const others = guides.filter((g) => g.slug !== guide.slug);
+  const image = getPageImage(path);
 
   return (
     <Container className="pt-8">
@@ -52,6 +56,7 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
           datePublished: guide.published,
           dateModified: guide.updated,
           mainEntityOfPage: absoluteUrl(path),
+          ...(image && { image: absoluteUrl(image.src) }),
           inLanguage: siteConfig.language,
           author: { "@type": "Organization", name: siteConfig.name, url: siteConfig.url },
           publisher: { "@type": "Organization", name: siteConfig.name, url: siteConfig.url },
@@ -60,7 +65,7 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
       <Breadcrumbs
         items={[
           { name: "Home", path: "/" },
-          { name: "Guides", path: "/guides" },
+          { name: "Blog", path: "/guides" },
           { name: guide.title, path },
         ]}
       />
@@ -71,9 +76,10 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
           <p className="mt-4 text-sm text-muted">
             By the {siteConfig.name} team · Updated <time dateTime={guide.updated}>{dateFormat.format(new Date(guide.updated))}</time>
           </p>
+          <PageImage path={path} priority className="mt-8" />
         </header>
         <Article>
-          <Sections sections={guide.sections} />
+          <Sections sections={guide.sections} currentPath={path} />
 
           <section aria-labelledby="try-it">
             <h2 id="try-it">Try it with your own numbers</h2>
@@ -87,19 +93,26 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
           </section>
 
           <SourceList sources={guide.sources} />
-
-          <section aria-labelledby="more-guides">
-            <h2 id="more-guides">More guides</h2>
-            <ul>
-              {others.map((g) => (
-                <li key={g.slug}>
-                  <Link href={`/guides/${g.slug}`}>{g.title}</Link>
-                </li>
-              ))}
-            </ul>
-          </section>
         </Article>
       </article>
+
+      <section aria-labelledby="more-guides" className="mt-16">
+        <h2 id="more-guides" className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
+          More from the blog
+        </h2>
+        <div className="mt-6">
+          <GuideCards exclude={guide.slug} />
+        </div>
+      </section>
+
+      <section aria-labelledby="calculators" className="mt-16">
+        <h2 id="calculators" className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
+          Loan calculators
+        </h2>
+        <div className="mt-6">
+          <LoanCategoryCards />
+        </div>
+      </section>
     </Container>
   );
 }

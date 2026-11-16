@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { LoanCalculator } from "@/components/loan-calculator";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { FaqList } from "@/components/faq-list";
+import { GuideCards } from "@/components/guide-cards";
+import { PageImage } from "@/components/page-image";
 import { Container, Sections, SourceList } from "@/components/content-blocks";
 import { LoanCategoryCards } from "@/components/loan-category-cards";
 import { ScenarioTable } from "@/components/scenario-table";
@@ -44,9 +46,12 @@ export default async function LoanTypePage({ params }: PageProps<"/[slug]">) {
             { name: page.h1, path },
           ]}
         />
-        <div className="mt-6 max-w-2xl">
-          <h1 className="font-serif text-4xl font-semibold tracking-tight sm:text-5xl">{page.h1}</h1>
-          <p className="mt-3 text-lg leading-relaxed text-muted">{page.intro}</p>
+        <div className="mt-6 grid items-center gap-8 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+          <div>
+            <h1 className="font-serif text-4xl font-semibold tracking-tight sm:text-5xl">{page.h1}</h1>
+            <p className="mt-3 text-lg leading-relaxed text-muted">{page.intro}</p>
+          </div>
+          <PageImage path={path} priority sizes="(min-width: 768px) 45vw, 100vw" className="hidden md:block" />
         </div>
         <div className="mt-8">
           <LoanCalculator preset={page.preset} />
@@ -58,7 +63,7 @@ export default async function LoanTypePage({ params }: PageProps<"/[slug]">) {
 
       <Container>
         <div className="prose-content mx-auto max-w-3xl">
-          <Sections sections={page.sections} />
+          <Sections sections={page.sections} currentPath={path} />
 
           <section aria-labelledby="worked-example">
             <h2 id="worked-example">{page.scenarioHeading}</h2>
@@ -86,6 +91,17 @@ export default async function LoanTypePage({ params }: PageProps<"/[slug]">) {
 
           <SourceList sources={page.sources} />
         </div>
+      </Container>
+
+      <Container className="mt-16">
+        <section aria-labelledby="related-articles">
+          <h2 id="related-articles" className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
+            Related articles
+          </h2>
+          <div className="mt-6">
+            <GuideCards />
+          </div>
+        </section>
       </Container>
 
       <Container className="mt-16">

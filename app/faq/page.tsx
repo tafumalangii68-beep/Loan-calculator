@@ -18,6 +18,7 @@ export default function FaqPage() {
       title="Frequently asked questions"
       path="/faq"
       intro="How the calculators work, what the results mean, and how we handle your data."
+      related
     >
       {allFaqs.map((group) => (
         <section key={group.heading} aria-labelledby={slugify(group.heading)}>
@@ -30,7 +31,7 @@ export default function FaqPage() {
       <section aria-labelledby="still">
         <h2 id="still">Still have a question?</h2>
         <p>
-          Try the <Link href="/guides">guides</Link>, or <Link href="/contact">contact us</Link>.
+          Try the <Link href="/guides">LoanCalm blog</Link>, or <Link href="/contact">contact us</Link>.
         </p>
       </section>
     </SimplePage>

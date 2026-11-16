@@ -15,6 +15,7 @@ export default function AboutPage() {
       title="About us"
       path="/about"
       intro="Simple, private loan calculators with clear explanations of the math."
+      related
     >
       <section aria-labelledby="why">
         <h2 id="why">Why this site exists</h2>
@@ -40,6 +41,10 @@ export default function AboutPage() {
 
       <section aria-labelledby="content">
         <h2 id="content">How we write our guides</h2>
+        <p>
+          Our <Link href="/guides">blog</Link> explains the ideas behind the calculators, starting with{" "}
+          <Link href="/guides/how-loan-amortization-works">how loan amortization works</Link>.
+        </p>
         <ul>
           <li>We explain how loans work in plain English, with worked examples you can check yourself.</li>
           <li>

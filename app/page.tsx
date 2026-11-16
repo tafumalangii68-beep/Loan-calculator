@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, Calculator, Layers, ShieldCheck, Sparkles, Zap } from "lucide-react";
 import { LoanCalculator } from "@/components/loan-calculator";
-import { HeroIllustration } from "@/components/hero-illustration";
+import { PageImage } from "@/components/page-image";
 import { LoanCategoryCards } from "@/components/loan-category-cards";
 import { FaqList } from "@/components/faq-list";
-import { CardLink, Container } from "@/components/content-blocks";
+import { Container } from "@/components/content-blocks";
+import { GuideCards } from "@/components/guide-cards";
 import { ScenarioTable } from "@/components/scenario-table";
 import { JsonLd } from "@/components/json-ld";
-import { guides } from "@/data/guides";
 import { homeFaqs } from "@/data/faqs";
 import { calculateLoan } from "@/lib/loan-math";
 import { formatCurrency } from "@/lib/format";
@@ -72,7 +72,12 @@ export default function HomePage() {
               ))}
             </ul>
           </div>
-          <HeroIllustration className="mx-auto hidden w-full max-w-lg md:block" />
+          <PageImage
+            path="/"
+            priority
+            sizes="(min-width: 768px) 45vw, 100vw"
+            className="mx-auto hidden max-w-xl md:block"
+          />
         </div>
       </Container>
 
@@ -193,7 +198,7 @@ export default function HomePage() {
               </li>
               <li>
                 <strong>The amount.</strong> Every dollar borrowed earns interest until it’s repaid, so a larger down
-                payment or extra principal payments reduce the total.
+                payment or <Link href="/guides/extra-loan-payments">extra principal payments</Link> reduce the total.
               </li>
             </ul>
             <p>Here’s the same $25,000 loan under four different rates and terms:</p>
@@ -250,13 +255,26 @@ export default function HomePage() {
               for details.
             </p>
           </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            {guides.map((guide) => (
-              <CardLink key={guide.slug} href={`/guides/${guide.slug}`} title={guide.title}>
-                {guide.intro.length > 110 ? `${guide.intro.slice(0, 107)}…` : guide.intro}
-              </CardLink>
-            ))}
+        </section>
+      </Container>
+
+      {/* Blog */}
+      <Container className="mt-20">
+        <section aria-labelledby="blog">
+          <SectionHeading
+            id="blog"
+            eyebrow="From the blog"
+            title="Learn how loans really work"
+            intro="Short, plain-English articles with worked examples you can check in the calculator."
+          />
+          <div className="mt-8">
+            <GuideCards />
           </div>
+          <p className="mt-6 text-sm text-muted">
+            <Link href="/guides" className="link">
+              See all blog articles
+            </Link>
+          </p>
         </section>
       </Container>
 
@@ -304,7 +322,7 @@ export default function HomePage() {
               href="/guides"
               className="inline-flex h-12 items-center rounded-full border border-white/40 px-6 text-sm font-semibold text-white transition-colors hover:bg-white/10"
             >
-              Read the guides
+              Read the blog
             </Link>
           </div>
         </section>

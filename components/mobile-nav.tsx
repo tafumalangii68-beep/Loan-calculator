@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import type { NavLink } from "@/lib/site-config";
 
-export function MobileNav({ links }: { links: NavLink[] }) {
+export function MobileNav({ links, blogPosts = [] }: { links: NavLink[]; blogPosts?: NavLink[] }) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -38,6 +38,21 @@ export function MobileNav({ links }: { links: NavLink[] }) {
                 <Link href={link.href} onClick={close} className="block rounded-md px-2 py-3 text-ink hover:bg-beige">
                   {link.mobileLabel ?? link.label}
                 </Link>
+                {link.href === "/guides" && blogPosts.length > 0 && (
+                  <ul className="mb-1 ml-3 border-l border-line pl-2">
+                    {blogPosts.map((post) => (
+                      <li key={post.href}>
+                        <Link
+                          href={post.href}
+                          onClick={close}
+                          className="block rounded-md px-2 py-2 text-sm text-muted hover:bg-beige hover:text-ink"
+                        >
+                          {post.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
             <li className="px-2 pt-2 pb-3 sm:hidden">

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { mainNav, siteConfig } from "@/lib/site-config";
 import { buildSearchIndex } from "@/lib/search-index";
+import { guides } from "@/data/guides";
+import { BlogMenu } from "./blog-menu";
 import { MobileNav } from "./mobile-nav";
 import { Logo } from "./logo";
 import { SiteSearch } from "./site-search";
@@ -19,12 +21,16 @@ export function SiteHeader() {
           <ul className="flex items-center gap-0.5 text-[0.95rem]">
             {mainNav.map((link) => (
               <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="rounded-md px-3 py-2 text-ink/80 transition-colors hover:bg-beige hover:text-ink"
-                >
-                  {link.label}
-                </Link>
+                {link.href === "/guides" ? (
+                  <BlogMenu label={link.label} />
+                ) : (
+                  <Link
+                    href={link.href}
+                    className="rounded-md px-3 py-2 text-ink/80 transition-colors hover:bg-beige hover:text-ink"
+                  >
+                    {link.label}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
@@ -35,7 +41,10 @@ export function SiteHeader() {
           <Link href="/contact" className="btn-primary hidden rounded-full px-5 sm:inline-flex">
             Contact Us
           </Link>
-          <MobileNav links={mainNav} />
+          <MobileNav
+            links={mainNav}
+            blogPosts={guides.map((g) => ({ href: `/guides/${g.slug}`, label: g.title }))}
+          />
         </div>
       </div>
     </header>

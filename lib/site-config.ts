@@ -49,7 +49,7 @@ export const mainNav: NavLink[] = [
   { href: "/auto-loan-calculator", label: "Auto", mobileLabel: "Auto loan calculator" },
   { href: "/personal-loan-calculator", label: "Personal", mobileLabel: "Personal loan calculator" },
   { href: "/student-loan-calculator", label: "Student", mobileLabel: "Student loan calculator" },
-  { href: "/guides", label: "Guides" },
+  { href: "/guides", label: "Blog", mobileLabel: "Blog: all articles" },
   { href: "/faq", label: "FAQ" },
   { href: "/about", label: "About" },
 ];
@@ -66,9 +66,9 @@ export const footerNav: { heading: string; links: NavLink[] }[] = [
     ],
   },
   {
-    heading: "Learn",
+    heading: "Blog",
     links: [
-      { href: "/guides", label: "All guides" },
+      { href: "/guides", label: "All articles" },
       { href: "/guides/how-loan-amortization-works", label: "How amortization works" },
       { href: "/guides/apr-vs-interest-rate", label: "APR vs. interest rate" },
       { href: "/guides/extra-loan-payments", label: "Paying extra on a loan" },

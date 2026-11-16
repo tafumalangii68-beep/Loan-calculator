@@ -38,7 +38,7 @@ export function buildSearchIndex(): SearchEntry[] {
       title: guide.title,
       href: `/guides/${guide.slug}`,
       summary: guide.metaDescription,
-      kind: "Guide",
+      kind: "Blog",
       keywords: guide.sections.map((s) => s.heading).join(" "),
     })),
     ...allFaqs.flatMap((group) =>
