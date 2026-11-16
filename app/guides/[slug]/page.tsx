@@ -10,6 +10,7 @@ import { PageImage } from "@/components/page-image";
 import { getPageImage } from "@/lib/images";
 import { getGuide, guides } from "@/data/guides";
 import { getLoanType } from "@/data/loan-types";
+import { countryH1Name, getCountry } from "@/data/countries";
 import { buildMetadata } from "@/lib/seo";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 
@@ -35,6 +36,9 @@ const dateFormat = new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZon
 
 function calculatorName(href: string) {
   if (href === "/") return "Loan calculator";
+  if (href === "/countries") return "Loan calculators for all European countries";
+  const country = getCountry(href.slice(1));
+  if (country) return `${countryH1Name(country)} loan calculator (${country.currency})`;
   return getLoanType(href.slice(1))?.h1 ?? href;
 }
 

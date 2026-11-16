@@ -12,7 +12,7 @@ import { absoluteUrl, siteConfig } from "@/lib/site-config";
 import { makeMoney } from "@/lib/money";
 import { countryScenarios } from "@/lib/country-presets";
 import { Breadcrumbs } from "./breadcrumbs";
-import { Container } from "./content-blocks";
+import { Container, guideAutoLinks, linkify } from "./content-blocks";
 import { CountryCalculator } from "./country-calculator";
 import { CountryCards } from "./country-cards";
 import { FaqList } from "./faq-list";
@@ -69,6 +69,8 @@ export function CountryPage({ country }: { country: Country }) {
   const faqs = countryFaqs(country);
   const neighbours = countries.filter((c) => c.region === country.region && c.slug !== country.slug).slice(0, 8);
   const scenarios = countryScenarios(currency.exampleScale);
+  // Contextual links to the European guides, each linked once per page.
+  const linked = new Set<string>();
 
   const facts = [
     { label: "Currency", value: `${currency.name} (${country.currency}, ${money.symbol})` },
@@ -164,7 +166,7 @@ export function CountryPage({ country }: { country: Country }) {
             <h2 id="how-loans-work">How loans work in {where}</h2>
             <ul>
               {country.notes.map((note) => (
-                <li key={note.slice(0, 40)}>{note}</li>
+                <li key={note.slice(0, 40)}>{linkify(note, linked, guideAutoLinks)}</li>
               ))}
             </ul>
           </section>
@@ -175,7 +177,7 @@ export function CountryPage({ country }: { country: Country }) {
               {country.terms.map((t) => (
                 <div key={t.term} className="px-5 py-4">
                   <dt className="font-semibold text-ink">{t.term}</dt>
-                  <dd className="mt-1 leading-relaxed text-muted">{t.meaning}</dd>
+                  <dd className="mt-1 leading-relaxed text-muted">{linkify(t.meaning, linked, guideAutoLinks)}</dd>
                 </div>
               ))}
             </dl>
@@ -191,7 +193,8 @@ export function CountryPage({ country }: { country: Country }) {
               treat it as an estimate and rely on the figure in your offer.
             </p>
             <p>
-              Learn more in our guide to <Link href="/guides/apr-vs-interest-rate">APR vs. interest rate</Link>, and see{" "}
+              See <Link href="/guides/apr-names-in-europe">what the APR is called across Europe</Link>, whether a{" "}
+              <Link href="/guides/fixed-vs-variable-rates-europe">fixed or variable rate</Link> suits you, and{" "}
               <Link href="/guides/how-loan-amortization-works">how amortization works</Link> to read the schedule.
             </p>
           </section>

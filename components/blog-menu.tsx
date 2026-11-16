@@ -8,6 +8,9 @@ import { getPageImage, IMAGE_HEIGHT, IMAGE_WIDTH } from "@/lib/images";
  * "Blog" item for the desktop header. The link itself goes to the blog index;
  * the panel of posts opens on hover and on keyboard focus, with no JavaScript.
  */
+// Newest first; the full list is one click away on the blog page.
+const latest = [...guides].sort((a, b) => b.published.localeCompare(a.published)).slice(0, 4);
+
 export function BlogMenu({ label }: { label: string }) {
   return (
     <div className="group relative">
@@ -22,7 +25,7 @@ export function BlogMenu({ label }: { label: string }) {
         <div className="rounded-2xl border border-line bg-white p-3 shadow-lg">
           <p className="px-2 pt-1 pb-2 text-xs font-semibold tracking-wide text-muted uppercase">Latest articles</p>
           <ul>
-            {guides.map((guide) => {
+            {latest.map((guide) => {
               const href = `/guides/${guide.slug}`;
               const image = getPageImage(href);
               return (

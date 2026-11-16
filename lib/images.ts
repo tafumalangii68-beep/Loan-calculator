@@ -47,6 +47,18 @@ export const pageImages: Record<string, SiteImage> = {
     src: "/images/apr-vs-interest-rate.webp",
     alt: "Balance scale comparing two loan offers, the side with extra fee tags weighing more",
   },
+  "/guides/apr-names-in-europe": {
+    src: "/images/apr-names-in-europe.webp",
+    alt: "Flags of France, Spain, Poland, Germany, Italy and the United Kingdom next to a percent sign",
+  },
+  "/guides/fixed-vs-variable-rates-europe": {
+    src: "/images/fixed-vs-variable-rates-europe.webp",
+    alt: "Chart comparing a flat fixed-rate line with a variable rate that rises and falls",
+  },
+  "/guides/annuity-vs-linear-repayment": {
+    src: "/images/annuity-vs-linear-repayment.webp",
+    alt: "Two bar charts: equal annuity payments on the left, falling linear payments on the right",
+  },
   "/about": {
     src: "/images/about.webp",
     alt: "Three people working together at a table with a laptop, notebook and calculator",

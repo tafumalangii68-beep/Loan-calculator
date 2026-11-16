@@ -15,8 +15,19 @@ export function Article({ children }: { children: ReactNode }) {
  * Phrases that become contextual internal links inside article text. The first
  * match of each target on a page is linked; links to the current page are skipped.
  */
-const autoLinks: { pattern: RegExp; href: string }[] = [
+type AutoLink = { pattern: RegExp; href: string };
+
+/** Links to guides only, safe on European pages (no links to US calculators). */
+export const guideAutoLinks: AutoLink[] = [
+  { pattern: /\bEuribor\b/, href: "/guides/fixed-vs-variable-rates-europe" },
+  { pattern: /\bAPRC\b/, href: "/guides/apr-names-in-europe" },
+  { pattern: /\bannuity (?:loans?|mortgages?|repayments?)\b/i, href: "/guides/annuity-vs-linear-repayment" },
+  { pattern: /\b(?:serial|linear) (?:loans?|repayments?)\b/i, href: "/guides/annuity-vs-linear-repayment" },
   { pattern: /\bamortization schedules?\b/i, href: "/guides/how-loan-amortization-works" },
+];
+
+const autoLinks: AutoLink[] = [
+  ...guideAutoLinks,
   { pattern: /\bAPRs?\b/, href: "/guides/apr-vs-interest-rate" },
   { pattern: /\bextra (?:monthly )?payments?\b/i, href: "/guides/extra-loan-payments" },
   { pattern: /\bmortgages?\b/i, href: "/mortgage-loan-calculator" },
@@ -25,9 +36,9 @@ const autoLinks: { pattern: RegExp; href: string }[] = [
   { pattern: /\bstudent loans?\b/i, href: "/student-loan-calculator" },
 ];
 
-function linkify(text: string, used: Set<string>): ReactNode[] {
+export function linkify(text: string, used: Set<string>, rules: AutoLink[] = autoLinks): ReactNode[] {
   let best: { index: number; length: number; href: string } | null = null;
-  for (const { pattern, href } of autoLinks) {
+  for (const { pattern, href } of rules) {
     if (used.has(href)) continue;
     const match = pattern.exec(text);
     if (match && (!best || match.index < best.index)) {
@@ -42,7 +53,7 @@ function linkify(text: string, used: Set<string>): ReactNode[] {
     <Link key={`${best.href}-${best.index}`} href={best.href}>
       {text.slice(best.index, end)}
     </Link>,
-    ...linkify(text.slice(end), used),
+    ...linkify(text.slice(end), used, rules),
   ];
 }
 

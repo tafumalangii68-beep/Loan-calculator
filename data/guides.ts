@@ -1,6 +1,7 @@
 import { calculateLoan, calculatePayment, estimateApr } from "@/lib/loan-math";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import type { GuidePage } from "@/types/content";
+import { europeGuides } from "./guides-europe";
 
 // Worked numbers are computed with the calculator's own functions so the
 // text can never drift from what the tool shows.
@@ -207,6 +208,7 @@ export const guides: GuidePage[] = [
     published: "2026-11-13",
     updated: "2026-11-13",
   },
+  ...europeGuides,
 ];
 
 export function getGuide(slug: string) {
