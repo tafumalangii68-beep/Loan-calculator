@@ -95,7 +95,7 @@
     @apply mt-12;
   }
   .prose-content h2 {
-    @apply font-serif text-2xl font-semibold tracking-tight sm:text-[1.75rem];
+    @apply scroll-mt-24 font-serif text-2xl font-semibold tracking-tight sm:text-[1.75rem];
   }
   .prose-content h3 {
     @apply mt-8 text-lg font-semibold;

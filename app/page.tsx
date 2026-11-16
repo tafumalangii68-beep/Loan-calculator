@@ -34,7 +34,7 @@ function SectionHeading({ id, eyebrow, title, intro }: { id: string; eyebrow?: s
   return (
     <div className="max-w-2xl">
       {eyebrow && <p className="text-sm font-semibold tracking-wide text-accent uppercase">{eyebrow}</p>}
-      <h2 id={id} className="mt-2 font-serif text-3xl font-semibold tracking-tight text-ink sm:text-[2.25rem]">
+      <h2 id={id} className="mt-2 scroll-mt-24 font-serif text-3xl font-semibold tracking-tight text-ink sm:text-[2.25rem]">
         {title}
       </h2>
       {intro && <p className="mt-3 text-lg leading-relaxed text-muted">{intro}</p>}
@@ -51,6 +51,10 @@ export default function HomePage() {
       <Container className="pt-10 sm:pt-14">
         <div className="grid items-center gap-10 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
           <div>
+            <p className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-accent">
+              <Sparkles aria-hidden="true" className="size-3.5" />
+              Free loan calculators
+            </p>
             <h1 className="font-serif text-5xl font-semibold tracking-tight text-ink sm:text-6xl lg:text-7xl">
               Loan Calculator
             </h1>
@@ -58,6 +62,19 @@ export default function HomePage() {
               Calculate your monthly payment, total interest, and loan cost for any type of loan. Compare options and
               plan your finances with confidence.
             </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <a href="#calculator" className="btn-primary h-12 gap-2 rounded-full px-6">
+                <Calculator aria-hidden="true" className="size-4" />
+                Try the loan calculator
+              </a>
+              <a
+                href="#how-it-works"
+                className="inline-flex h-12 items-center gap-2 rounded-full border border-line-strong bg-white px-6 text-sm font-semibold text-ink transition-colors hover:border-accent/50 hover:text-accent"
+              >
+                How it works
+                <ArrowRight aria-hidden="true" className="size-4" />
+              </a>
+            </div>
             <ul className="mt-8 grid max-w-xl grid-cols-2 gap-x-4 gap-y-4">
               {benefits.map(({ icon: Icon, title: t, text }) => (
                 <li key={t} className="flex items-center gap-3 sm:items-start">

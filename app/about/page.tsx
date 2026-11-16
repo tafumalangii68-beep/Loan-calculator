@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Scale, ShieldCheck, Target } from "lucide-react";
 import { SimplePage } from "@/components/simple-page";
 import { buildMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
@@ -9,13 +10,44 @@ export const metadata = buildMetadata({
   path: "/about",
 });
 
+const highlights = [
+  {
+    icon: Target,
+    title: "Our mission",
+    text: "Make loan math simple, free and easy to check, so you can compare offers with confidence.",
+  },
+  {
+    icon: Scale,
+    title: "Our values",
+    text: "Accuracy, transparency and plain English. Every result shows the formula behind it.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Private by design",
+    text: "Calculations run in your browser. Nothing you type is sent to a server or saved.",
+  },
+];
+
 export default function AboutPage() {
   return (
     <SimplePage
       title="About us"
       path="/about"
-      intro="Simple, private loan calculators with clear explanations of the math."
+      intro={`${siteConfig.name} is a free loan calculator that helps you check a monthly payment, see the total interest and compare options before you commit.`}
       related
+      highlights={
+        <ul className="grid gap-4 sm:grid-cols-3">
+          {highlights.map(({ icon: Icon, title, text }) => (
+            <li key={title} className="rounded-2xl border border-line bg-white p-6">
+              <span className="flex size-11 items-center justify-center rounded-xl bg-accent-soft text-accent">
+                <Icon aria-hidden="true" className="size-5" strokeWidth={1.75} />
+              </span>
+              <h2 className="mt-4 font-semibold text-ink">{title}</h2>
+              <p className="mt-1 text-sm leading-relaxed text-muted">{text}</p>
+            </li>
+          ))}
+        </ul>
+      }
     >
       <section aria-labelledby="why">
         <h2 id="why">Why this site exists</h2>

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/breadcrumbs";
-import { Article, Container, Sections, SourceList } from "@/components/content-blocks";
+import { Article, Container, Sections, SourceList, slugify } from "@/components/content-blocks";
+import { TableOfContents } from "@/components/table-of-contents";
 import { GuideCards } from "@/components/guide-cards";
 import { JsonLd } from "@/components/json-ld";
 import { LoanCategoryCards } from "@/components/loan-category-cards";
@@ -79,6 +80,15 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
           <PageImage path={path} priority className="mt-8" />
         </header>
         <Article>
+          <div className="mt-10">
+            <TableOfContents
+              items={[
+                ...guide.sections.map((s) => ({ id: slugify(s.heading), label: s.heading })),
+                { id: "try-it", label: "Try it with your own numbers" },
+                { id: "sources", label: "Sources and further reading" },
+              ]}
+            />
+          </div>
           <Sections sections={guide.sections} currentPath={path} />
 
           <section aria-labelledby="try-it">
