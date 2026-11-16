@@ -11,6 +11,11 @@ export default async function OpengraphImage() {
   // Illustration with empty space on the left for the headline (1200×630).
   const background = await readFile(join(process.cwd(), "app/og-background.jpg"));
   const backgroundSrc = `data:image/jpeg;base64,${background.toString("base64")}`;
+  // Full LoanCalm logo (transparent PNG, 150px tall) shown above the headline.
+  const logo = await readFile(join(process.cwd(), "app/og-logo.png"));
+  const logoSrc = `data:image/png;base64,${logo.toString("base64")}`;
+  const logoHeight = 120;
+  const logoWidth = Math.round((logo.readUInt32BE(16) / logo.readUInt32BE(20)) * logoHeight);
 
   return new ImageResponse(
     (
@@ -27,18 +32,9 @@ export default async function OpengraphImage() {
             height: "100%",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-            <svg width="72" height="72" viewBox="0 0 32 32">
-              <rect width="32" height="32" rx="9" fill="#205C40" />
-              <rect x="4" y="8" width="24.5" height="4.2" rx="2.1" fill="#fff" />
-              <rect x="4" y="14.1" width="17.6" height="4.2" rx="2.1" fill="#fff" />
-              <rect x="4" y="20.2" width="12.2" height="4.2" rx="2.1" fill="#fff" />
-            </svg>
-            <div style={{ display: "flex", fontSize: 52, fontWeight: 700, letterSpacing: -1 }}>
-              <span>Loan</span>
-              <span style={{ color: "#205C40" }}>Calm</span>
-            </div>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={logoSrc} width={logoWidth} height={logoHeight} alt="" />
+
           <div style={{ fontSize: 76, fontWeight: 700, letterSpacing: -2, lineHeight: 1.05, marginTop: 36 }}>
             Loan Calculator
           </div>
