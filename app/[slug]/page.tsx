@@ -15,6 +15,9 @@ import { CountryPage, countryMetadata } from "@/components/country-page";
 import { buildMetadata, webPageJsonLd } from "@/lib/seo";
 
 export const dynamicParams = false;
+// Regenerate daily so country pages pick up the latest ECB exchange rates for
+// their example amounts (see lib/exchange-rates.ts). Must be a literal.
+export const revalidate = 86400;
 
 // One root-level dynamic segment serves two kinds of page: the US loan-type
 // calculators (/mortgage-loan-calculator, …) and the European country pages

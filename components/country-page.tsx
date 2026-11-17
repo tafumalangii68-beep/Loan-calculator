@@ -13,6 +13,8 @@ import { buildMetadata, webPageJsonLd } from "@/lib/seo";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 import { makeMoney } from "@/lib/money";
 import { countryScenarios } from "@/lib/country-presets";
+import { getExchangeRates } from "@/lib/exchange-rates";
+import { exampleScaleFor } from "@/lib/exchange-rates-core";
 import { Breadcrumbs } from "./breadcrumbs";
 import { Container, guideAutoLinks, linkify } from "./content-blocks";
 import { CountryCalculator } from "./country-calculator";
@@ -22,6 +24,10 @@ import { Flag } from "./flag";
 import { GuideCards } from "./guide-cards";
 import { JsonLd } from "./json-ld";
 import { ScenarioTable } from "./scenario-table";
+
+const rateFormat = new Intl.NumberFormat("en-GB", { maximumSignificantDigits: 6 });
+const rateDateFormat = new Intl.DateTimeFormat("en-GB", { dateStyle: "long", timeZone: "UTC" });
+const formatRateDate = (isoDate: string) => rateDateFormat.format(new Date(`${isoDate}T00:00:00Z`));
 
 function copy(country: Country) {
   const where = countryInSentence(country);
@@ -62,15 +68,18 @@ function countryFaqs(country: Country) {
   ];
 }
 
-export function CountryPage({ country }: { country: Country }) {
+export async function CountryPage({ country }: { country: Country }) {
   const { where, h1Name, currency, money } = copy(country);
+  // Example amounts follow the latest ECB rate; typed amounts and the formula never do.
+  const rates = await getExchangeRates();
+  const example = exampleScaleFor(country.currency, currency.exampleScale, rates);
   const path = `/${country.slug}`;
   const meta = countryMetadata(country);
   const title = `${h1Name} Loan Calculator`;
   const description = String(meta.description);
   const faqs = countryFaqs(country);
   const neighbours = countries.filter((c) => c.region === country.region && c.slug !== country.slug).slice(0, 8);
-  const scenarios = countryScenarios(currency.exampleScale);
+  const scenarios = countryScenarios(example.scale);
   const image = getCountryImage(country.slug, country.region);
   // Contextual links to the European guides, each linked once per page.
   const linked = new Set<string>();
@@ -79,6 +88,14 @@ export function CountryPage({ country }: { country: Country }) {
     { label: "Currency", value: `${currency.name} (${country.currency}, ${money.symbol})` },
     { label: "Written as", value: money.format(250000) },
     { label: "Cost of credit shown as", value: country.aprTerm },
+    ...(example.source === "ecb"
+      ? [
+          {
+            label: "Exchange rate",
+            value: `1 EUR = ${rateFormat.format(example.scale)} ${country.currency} (ECB, ${formatRateDate(example.date!)})`,
+          },
+        ]
+      : []),
     { label: "Supervisor", value: country.regulator },
     { label: "Status", value: country.status },
   ];
@@ -160,7 +177,7 @@ export function CountryPage({ country }: { country: Country }) {
             <CountryCalculator
               config={{
                 currency: { code: country.currency, locale: country.locale },
-                exampleScale: currency.exampleScale,
+                exampleScale: example.scale,
                 aprShort: country.aprShort,
               }}
             />
@@ -169,6 +186,8 @@ export function CountryPage({ country }: { country: Country }) {
             <Info aria-hidden="true" className="mt-px size-3.5 shrink-0" />
             Starting values are examples only, not current {country.name} rates. Replace them with the figures from your
             loan offer.
+            {example.source === "ecb" &&
+              ` Example amounts are converted from euro examples at the ECB reference rate of ${formatRateDate(example.date!)} and update daily; amounts you enter are never converted.`}
           </p>
         </section>
       </Container>

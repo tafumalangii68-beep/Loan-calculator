@@ -64,8 +64,10 @@ export interface Country {
 export interface CurrencyInfo {
   name: string;
   /**
-   * Rough size of one euro in this currency, rounded, used only to scale the
-   * example amounts in the calculators. Not an exchange rate.
+   * Fallback size of one euro in this currency, used only to scale the example
+   * amounts in the calculators. Country pages use the latest ECB reference
+   * rate instead when the ECB publishes one (lib/exchange-rates.ts); this value
+   * applies to currencies the ECB doesn't cover, or if no rate is available.
    */
   exampleScale: number;
 }
@@ -89,7 +91,8 @@ export const CURRENCIES: Record<string, CurrencyInfo> = {
   RSD: { name: "Serbian dinar", exampleScale: 120 },
   MKD: { name: "Macedonian denar", exampleScale: 60 },
   ALL: { name: "Albanian lek", exampleScale: 100 },
-  BAM: { name: "convertible mark", exampleScale: 2 },
+  // Fixed to the euro by a currency board.
+  BAM: { name: "convertible mark", exampleScale: 1.95583 },
   TRY: { name: "Turkish lira", exampleScale: 45 },
 };
 
