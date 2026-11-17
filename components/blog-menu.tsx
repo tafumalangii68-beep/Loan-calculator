@@ -22,7 +22,8 @@ export function BlogMenu({ label }: { label: string }) {
         <ChevronDown aria-hidden="true" className="size-4 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
       </Link>
       <div className="invisible absolute top-full left-1/2 z-40 w-[34rem] -translate-x-1/2 pt-2 opacity-0 transition-opacity group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-        <div className="rounded-2xl border border-line bg-white p-3 shadow-lg">
+        {/* The header is sticky, so cap the panel at the viewport height and let it scroll inside. */}
+        <div className="max-h-[calc(100dvh-5.5rem)] overflow-y-auto overscroll-contain rounded-2xl border border-line bg-white p-3 shadow-lg">
           <p className="px-2 pt-1 pb-2 text-xs font-semibold tracking-wide text-muted uppercase">Latest articles</p>
           <ul>
             {latest.map((guide) => {
@@ -43,7 +44,8 @@ export function BlogMenu({ label }: { label: string }) {
                     )}
                     <span>
                       <span className="block font-semibold text-ink">{guide.title}</span>
-                      <span className="mt-0.5 line-clamp-2 block text-sm text-muted">{guide.metaDescription}</span>
+                      {/* No `block` here: it would override line-clamp's display and show the full text. */}
+                      <span className="mt-0.5 line-clamp-2 text-sm text-muted">{guide.metaDescription}</span>
                     </span>
                   </Link>
                 </li>
