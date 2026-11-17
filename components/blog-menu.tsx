@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { guides } from "@/data/guides";
 import { getPageImage, IMAGE_HEIGHT, IMAGE_WIDTH } from "@/lib/images";
+import { navLinkClass } from "./nav-styles";
 
 /**
  * "Blog" item for the desktop header. The link itself goes to the blog index;
@@ -16,7 +17,7 @@ export function BlogMenu({ label }: { label: string }) {
     <div className="group relative">
       <Link
         href="/guides"
-        className="inline-flex items-center gap-1 rounded-md px-2.5 py-2 text-ink/80 xl:px-3 transition-colors hover:bg-beige hover:text-ink"
+        className={navLinkClass}
       >
         {label}
         <ChevronDown aria-hidden="true" className="size-4 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />

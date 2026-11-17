@@ -2,7 +2,9 @@ import Link from "next/link";
 import { mainNav, siteConfig } from "@/lib/site-config";
 import { buildSearchIndex } from "@/lib/search-index";
 import { guides } from "@/data/guides";
+import { countries } from "@/data/countries";
 import { BlogMenu } from "./blog-menu";
+import { HeaderNav } from "./header-nav";
 import { MobileNav } from "./mobile-nav";
 import { Logo } from "./logo";
 import { SiteSearch } from "./site-search";
@@ -17,24 +19,11 @@ export function SiteHeader() {
           <Logo />
         </Link>
 
-        <nav aria-label="Main" className="hidden lg:block">
-          <ul className="flex items-center gap-0.5 text-[0.95rem]">
-            {mainNav.map((link) => (
-              <li key={link.href}>
-                {link.href === "/guides" ? (
-                  <BlogMenu label={link.label} />
-                ) : (
-                  <Link
-                    href={link.href}
-                    className="rounded-md px-2.5 py-2 text-ink/80 transition-colors hover:bg-beige hover:text-ink xl:px-3"
-                  >
-                    {link.label}
-                  </Link>
-                )}
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <HeaderNav
+          links={mainNav}
+          blogMenu={<BlogMenu label={mainNav.find((l) => l.href === "/guides")?.label ?? "Blog"} />}
+          countryPaths={countries.map((c) => `/${c.slug}`)}
+        />
 
         <div className="flex items-center gap-1.5">
           <SiteSearch index={searchIndex} />
