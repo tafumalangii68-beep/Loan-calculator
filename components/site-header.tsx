@@ -38,9 +38,6 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-1.5">
           <SiteSearch index={searchIndex} />
-          <Link href="/contact" className="btn-primary hidden rounded-full px-5 whitespace-nowrap sm:inline-flex">
-            Contact Us
-          </Link>
           <MobileNav
             links={mainNav}
             blogPosts={guides.map((g) => ({ href: `/guides/${g.slug}`, label: g.title }))}
