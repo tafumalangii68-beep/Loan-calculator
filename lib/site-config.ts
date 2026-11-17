@@ -20,9 +20,15 @@ export const siteConfig = {
   language: "en",
   country: "United States",
   /** Set to a real address before launch, e.g. "hello@yourdomain.com". */
-  contactEmail: null as string | null,
+  contactEmail: "worldwebsites906@gmail.com" as string | null,
+  /**
+   * Where the contact form posts. FormSubmit (formsubmit.co) relays the
+   * message to `contactEmail`. The first submission sends an activation email
+   * to that inbox; messages are delivered once the link in it is clicked.
+   */
+  contactFormEndpoint: "https://formsubmit.co/ajax/worldwebsites906@gmail.com" as string | null,
   /** Date the current versions of the legal pages took effect (ISO format). */
-  legalUpdated: "2026-11-13",
+  legalUpdated: "2026-11-18",
   legal: {
     /** Jurisdiction for the Terms. Confirm with a qualified adviser before launch. */
     governingLaw: null as string | null,

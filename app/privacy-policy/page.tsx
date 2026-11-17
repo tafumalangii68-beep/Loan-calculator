@@ -61,6 +61,7 @@ export default function PrivacyPolicyPage() {
         <p>
           Our fonts are bundled with the site and served from our own domain, so loading a page does not contact a
           third-party font service. The site does not embed third-party widgets, advertising or social media plugins.
+          The only third-party service is the contact-form relay described below, used only when you send a message.
           Links to other websites, such as government sources, take you to sites with their own privacy policies.
         </p>
       </section>
@@ -68,10 +69,12 @@ export default function PrivacyPolicyPage() {
       <section aria-labelledby="contact-info">
         <h2 id="contact-info">If you contact us</h2>
         <p>
-          The contact form on our <Link href="/contact">contact page</Link> doesn’t send anything to us. It opens a draft
-          in your own email app. If you email us, we receive your email address and whatever you include in the
-          message. We use it only to read and reply to your message, and we delete correspondence when it is no longer
-          needed.
+          When you send a message with the form on our <Link href="/contact">contact page</Link>, your name, email
+          address, chosen topic and message are sent to FormSubmit (formsubmit.co), a form-relay service that emails
+          them to us. Nothing is sent until you press “Send Message”, and your loan figures from the calculators are
+          never included. If you email us directly instead, we receive your email address and whatever you include in
+          the message. We use this information only to read and reply to your message, and we delete correspondence
+          when it is no longer needed. FormSubmit handles the data under its own privacy policy.
         </p>
       </section>
 
