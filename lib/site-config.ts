@@ -60,6 +60,7 @@ export const mainNav: NavLink[] = [
   { href: "/guides", label: "Blog", mobileLabel: "Blog: all articles" },
   { href: "/faq", label: "FAQ" },
   { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact", mobileLabel: "Contact us" },
 ];
 
 export const footerNav: { heading: string; links: NavLink[] }[] = [

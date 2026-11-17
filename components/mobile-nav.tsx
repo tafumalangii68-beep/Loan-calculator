@@ -33,7 +33,7 @@ export function MobileNav({ links, blogPosts = [] }: { links: NavLink[]; blogPos
                 Loan calculator
               </Link>
             </li>
-            {links.map((link) => (
+            {links.filter((link) => link.href !== "/contact").map((link) => (
               <li key={link.href}>
                 <Link href={link.href} onClick={close} className="block rounded-md px-2 py-3 text-ink hover:bg-beige">
                   {link.mobileLabel ?? link.label}
@@ -55,7 +55,8 @@ export function MobileNav({ links, blogPosts = [] }: { links: NavLink[]; blogPos
                 )}
               </li>
             ))}
-            <li className="px-2 pt-2 pb-3 sm:hidden">
+            {/* Contact is shown as this button rather than as a plain link in the list. */}
+            <li className="px-2 pt-2 pb-3">
               <Link href="/contact" onClick={close} className="btn-primary w-full rounded-full">
                 Contact Us
               </Link>
