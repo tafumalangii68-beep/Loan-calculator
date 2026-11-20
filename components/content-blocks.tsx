@@ -19,7 +19,8 @@ type AutoLink = { pattern: RegExp; href: string };
 
 /** Links to guides only, safe on European pages (no links to US calculators). */
 export const guideAutoLinks: AutoLink[] = [
-  { pattern: /\bEuribor\b/, href: "/guides/fixed-vs-variable-rates-europe" },
+  { pattern: /\bGerman (?:mortgages?|home loans?)\b/i, href: "/guides/mortgage-in-germany-as-a-foreigner" },
+  { pattern: /\bEuribor\b/,href: "/guides/fixed-vs-variable-rates-europe" },
   { pattern: /\bAPRC\b/, href: "/guides/apr-names-in-europe" },
   { pattern: /\bannuity (?:loans?|mortgages?|repayments?)\b/i, href: "/guides/annuity-vs-linear-repayment" },
   { pattern: /\b(?:serial|linear) (?:loans?|repayments?)\b/i, href: "/guides/annuity-vs-linear-repayment" },
@@ -57,7 +58,16 @@ export function linkify(text: string, used: Set<string>, rules: AutoLink[] = aut
   ];
 }
 
-export function Sections({ sections, currentPath }: { sections: ContentSection[]; currentPath?: string }) {
+export function Sections({
+  sections,
+  currentPath,
+  rules = autoLinks,
+}: {
+  sections: ContentSection[];
+  currentPath?: string;
+  /** Auto-link rules; European pages pass `guideAutoLinks` so they never link to the US calculators. */
+  rules?: AutoLink[];
+}) {
   // Shared across all sections so each target is linked once per page.
   const used = new Set<string>(currentPath ? [currentPath] : []);
   return (
@@ -66,12 +76,12 @@ export function Sections({ sections, currentPath }: { sections: ContentSection[]
         <section key={section.heading} aria-labelledby={slugify(section.heading)}>
           <h2 id={slugify(section.heading)}>{section.heading}</h2>
           {section.paragraphs.map((p) => (
-            <p key={p.slice(0, 40)}>{linkify(p, used)}</p>
+            <p key={p.slice(0, 40)}>{linkify(p, used, rules)}</p>
           ))}
           {section.list && (
             <ul>
               {section.list.map((item) => (
-                <li key={item}>{linkify(item, used)}</li>
+                <li key={item}>{linkify(item, used, rules)}</li>
               ))}
             </ul>
           )}

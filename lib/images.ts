@@ -55,6 +55,10 @@ export const pageImages: Record<string, SiteImage> = {
     src: "/images/fixed-vs-variable-rates-europe.webp",
     alt: "Chart on an easel: a flat fixed-rate line marked with an anchor and a wavy variable-rate line marked with waves",
   },
+  "/guides/mortgage-in-germany-as-a-foreigner": {
+    src: "/images/mortgage-in-germany-as-a-foreigner.webp",
+    alt: "German half-timbered house behind a table with house keys, a loan document folder, a calculator, gold coins and a German flag",
+  },
   "/guides/annuity-vs-linear-repayment": {
     src: "/images/annuity-vs-linear-repayment.webp",
     alt: "Two bar charts: equal annuity repayments on the left and falling linear repayments on the right, with euro coins",

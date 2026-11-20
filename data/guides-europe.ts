@@ -38,6 +38,24 @@ const linearLast = principalPart * (1 + r);
 const linearInterest = (r * P * (n + 1)) / 2;
 const linearSaving = annuity.totalInterest - linearInterest;
 
+// Germany guide: €400,000 home, illustrative purchase costs, 20% deposit,
+// 3.5% Sollzins with 2% initial Tilgung (the usual German way to set the payment).
+const dePrice = 400_000;
+const deTransferTax = dePrice * 0.05; // illustrative: rates vary by state
+const deNotary = dePrice * 0.02;
+const deBroker = dePrice * 0.0357;
+const deCosts = deTransferTax + deNotary + deBroker;
+const deLoan = dePrice * 0.8;
+const deRate = 0.035 / 12;
+const dePayment = (deLoan * (0.035 + 0.02)) / 12;
+const dePayments = Math.ceil(-Math.log(1 - (deLoan * deRate) / dePayment) / Math.log(1 + deRate));
+const deYears = Math.floor(dePayments / 12);
+const deMonths = dePayments % 12;
+const deBalanceAfter = (months: number) =>
+  deLoan * Math.pow(1 + deRate, months) - (dePayment * (Math.pow(1 + deRate, months) - 1)) / deRate;
+const deRestschuld10 = deBalanceAfter(120);
+const deRestschuld15 = deBalanceAfter(180);
+
 const CCD_2008 = {
   title: "Directive 2008/48/EC on credit agreements for consumers",
   publisher: "EUR-Lex, European Union",
@@ -55,6 +73,113 @@ const MCD = {
 };
 
 export const europeGuides: GuidePage[] = [
+  {
+    slug: "mortgage-in-germany-as-a-foreigner",
+    title: "How to Get a Mortgage in Germany as a Foreigner",
+    metaTitle: "How to Get a Mortgage in Germany as a Foreigner (2026 Guide)",
+    metaDescription:
+      "Can foreigners get a mortgage in Germany? What banks ask for by residence status, how much deposit and purchase costs you need, the documents, the steps and a worked example in euros.",
+    intro:
+      "There is no law stopping foreigners from buying property in Germany, and many expats finance a home with a German mortgage. What changes is how banks see you: your residence status, your job and how long you have lived in Germany decide how much you can borrow and how much of your own money you need. This guide explains what to expect, step by step.",
+    sections: [
+      {
+        heading: "Can foreigners get a mortgage in Germany?",
+        paragraphs: [
+          "Yes. Germany does not restrict property purchases by foreign nationals. Whether a bank will lend to you, and on what terms, is each bank's own decision, and the main factor is your residence status:",
+        ],
+        list: [
+          "EU and EEA citizens, and Swiss citizens, who live and work in Germany are usually treated much like German borrowers.",
+          "Non-EU citizens with a permanent residence permit (Niederlassungserlaubnis) or an EU Blue Card generally have the widest choice of banks.",
+          "With a temporary residence permit, fewer banks will lend, and they may ask for a larger deposit or a permit that runs well into the future.",
+          "Non-residents who live abroad and buy in Germany find it hardest: few banks lend to them, and they usually need a much larger share of their own money.",
+        ],
+      },
+      {
+        heading: "How much of your own money you need",
+        paragraphs: [
+          "German banks expect you to pay the purchase costs (Kaufnebenkosten) from your own funds, and most also want part of the price as a deposit. Banks that lend 100% of the price or more exist, but usually only for borrowers with strong German income, and at a higher rate.",
+          "The purchase costs alone usually add roughly 7% to 15% to the price:",
+        ],
+        list: [
+          "Real estate transfer tax (Grunderwerbsteuer): set by each federal state, currently from 3.5% to 6.5% of the price. Check the rate for the state where you buy.",
+          "Notary and land registry fees: commonly around 1.5% to 2% of the price.",
+          "Estate agent commission (Maklerprovision), if an agent is involved: for a flat or a single-family home, the buyer can be asked to pay at most the same amount as the seller (§ 656c BGB).",
+        ],
+      },
+      {
+        heading: "A worked example",
+        paragraphs: [
+          `Take a flat priced at ${eur.formatWhole(dePrice)} in a state with 5% transfer tax. The purchase costs come to about ${eur.formatWhole(deCosts)}: ${eur.formatWhole(deTransferTax)} transfer tax, ${eur.formatWhole(deNotary)} notary and land registry, and ${eur.formatWhole(deBroker)} agent commission. With a 20% deposit you would need about ${eur.formatWhole(deCosts + dePrice * 0.2)} of your own money and borrow ${eur.formatWhole(deLoan)}.`,
+          `German mortgages are usually quoted as a nominal rate (Sollzins) plus an initial repayment rate (anfängliche Tilgung). At an illustrative 3.5% Sollzins and 2% Tilgung, the monthly payment is (3.5% + 2%) × ${eur.formatWhole(deLoan)} ÷ 12 = ${eur.format(dePayment)}. At that payment the loan is paid off in about ${deYears} years${deMonths ? ` and ${deMonths} months` : ""}.`,
+          `If the rate is fixed for 10 years, about ${eur.formatWhole(deRestschuld10)} is still owed when the fixed period ends (the Restschuld), and that amount is refinanced at whatever rate applies then. With a 15-year fixed period it would be about ${eur.formatWhole(deRestschuld15)}. These rates are examples only, not current offers.`,
+        ],
+      },
+      {
+        heading: "How German mortgages work",
+        paragraphs: [
+          "Most German home loans are annuity loans (Annuitätendarlehen): you pay the same amount every month, and the share that repays the loan grows over time. The rate is usually fixed for a period (Zinsbindung) of 5, 10, 15 or more years.",
+          "Ten years after you have received the full loan, German law lets you end it with six months' notice without paying compensation (§ 489 BGB), even if the fixed period is longer. Repaying earlier during a fixed period usually costs a prepayment penalty (Vorfälligkeitsentschädigung), so ask for the right to make yearly special repayments (Sondertilgungen) if you may want to pay off faster.",
+          "Compare offers on the effective annual rate (effektiver Jahreszins), which includes fees, and use the nominal rate in a calculator to see your payment.",
+        ],
+      },
+      {
+        heading: "Documents banks usually ask for",
+        paragraphs: [],
+        list: [
+          "Passport and residence permit, plus your registration certificate (Meldebescheinigung).",
+          "Employment contract; many banks prefer a permanent contract with the probation period (Probezeit) completed.",
+          "Your last three payslips and your most recent annual tax statement or tax return.",
+          "Bank statements showing your savings and regular outgoings.",
+          "A SCHUFA credit report. If you are new to Germany your SCHUFA history may be short, so references from your home bank can help.",
+          "Property documents: the listing (Exposé), floor plans, a land register extract (Grundbuchauszug) and, for a flat, the owners' association papers.",
+        ],
+      },
+      {
+        heading: "Step by step",
+        paragraphs: [],
+        list: [
+          "Work out your budget, including purchase costs, and how much you could pay each month if rates were higher when your fixed period ends.",
+          "Talk to banks or an independent mortgage broker (Baufinanzierungsvermittler), who can compare many lenders, including ones that work with foreign borrowers.",
+          "Find a property and get the bank's loan commitment (Finanzierungszusage) before you sign.",
+          "The notary prepares the purchase contract. For a private buyer it should normally be sent to you two weeks before the signing appointment (§ 17 BeurkG), so you have time to read it.",
+          "Sign at the notary. If you don't understand German well, the notary will require an interpreter or a translation.",
+          "The bank registers a land charge (Grundschuld) as security, and the loan is paid out when the conditions in the contract are met.",
+        ],
+      },
+      {
+        heading: "Tips for expats",
+        paragraphs: [],
+        list: [
+          "Wait until your probation period has ended before applying; many banks won't lend during it.",
+          "If you earn in another currency, a euro mortgage carries exchange-rate risk: a weaker home currency makes every payment more expensive.",
+          "Ask about state-backed KfW loans, which can support energy-efficient homes and, in some programmes, families buying their first home.",
+          "Get quotes for several fixed-rate periods and compare the effective annual rate, not just the monthly payment.",
+        ],
+      },
+    ],
+    relatedCalculators: ["/de", "/countries", "/mortgage-loan-calculator"],
+    sources: [
+      {
+        title: "§ 489 BGB: borrower's right to terminate a loan",
+        publisher: "German Federal Ministry of Justice (gesetze-im-internet.de)",
+        url: "https://www.gesetze-im-internet.de/bgb/__489.html",
+      },
+      {
+        title: "§ 656c BGB: sharing the estate agent's commission",
+        publisher: "German Federal Ministry of Justice (gesetze-im-internet.de)",
+        url: "https://www.gesetze-im-internet.de/bgb/__656c.html",
+      },
+      {
+        title: "§ 17 BeurkG: duties of the notary before notarisation",
+        publisher: "German Federal Ministry of Justice (gesetze-im-internet.de)",
+        url: "https://www.gesetze-im-internet.de/beurkg/__17.html",
+      },
+      { title: "KfW: home ownership and energy-efficiency programmes", publisher: "KfW", url: "https://www.kfw.de/" },
+      MCD,
+    ],
+    published: "2026-11-21",
+    updated: "2026-11-21",
+  },
   {
     slug: "apr-names-in-europe",
     title: "APR in Europe: TAEG, TAE, RRSO and Other Local Names",

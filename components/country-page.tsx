@@ -14,6 +14,7 @@ import { absoluteUrl, siteConfig } from "@/lib/site-config";
 import { makeMoney } from "@/lib/money";
 import { countryScenarios } from "@/lib/country-presets";
 import { getExchangeRates } from "@/lib/exchange-rates";
+import { guides } from "@/data/guides";
 import { exampleScaleFor } from "@/lib/exchange-rates-core";
 import { Breadcrumbs } from "./breadcrumbs";
 import { Container, guideAutoLinks, linkify } from "./content-blocks";
@@ -81,6 +82,10 @@ export async function CountryPage({ country }: { country: Country }) {
   const neighbours = countries.filter((c) => c.region === country.region && c.slug !== country.slug).slice(0, 8);
   const scenarios = countryScenarios(example.scale);
   const image = getCountryImage(country.slug, country.region);
+  // Articles that list this country's calculator as related, country-specific ones first.
+  const countryGuides = guides
+    .filter((g) => g.relatedCalculators.includes(path))
+    .sort((a, b) => a.relatedCalculators.indexOf(path) - b.relatedCalculators.indexOf(path));
   // Contextual links to the European guides, each linked once per page.
   const linked = new Set<string>();
 
@@ -202,6 +207,18 @@ export async function CountryPage({ country }: { country: Country }) {
                 <li key={note.slice(0, 40)}>{linkify(note, linked, guideAutoLinks)}</li>
               ))}
             </ul>
+            {countryGuides.length > 0 && (
+              <>
+                <h3>Guides for {where}</h3>
+                <ul>
+                  {countryGuides.map((g) => (
+                    <li key={g.slug}>
+                      <Link href={`/guides/${g.slug}`}>{g.title}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </section>
 
           <section aria-labelledby="key-terms">

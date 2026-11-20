@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/breadcrumbs";
-import { Article, Container, Sections, SourceList, slugify } from "@/components/content-blocks";
+import { Article, Container, guideAutoLinks, Sections, SourceList, slugify } from "@/components/content-blocks";
+import { europeGuides } from "@/data/guides-europe";
 import { TableOfContents } from "@/components/table-of-contents";
 import { GuideCards } from "@/components/guide-cards";
 import { JsonLd } from "@/components/json-ld";
@@ -93,7 +94,11 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
               ]}
             />
           </div>
-          <Sections sections={guide.sections} currentPath={path} />
+          <Sections
+            sections={guide.sections}
+            currentPath={path}
+            rules={europeGuides.some((g) => g.slug === guide.slug) ? guideAutoLinks : undefined}
+          />
 
           <section aria-labelledby="try-it">
             <h2 id="try-it">Try it with your own numbers</h2>
